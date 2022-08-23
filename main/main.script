@@ -1,0 +1,120 @@
+local lights = {}
+
+local STATE_STAND = hash("stand")
+local STATE_RUN_LEFT = hash("run_left")
+local STATE_RUN_RIGHT = hash("run_right")
+local STATE_RUN = hash("run")
+local STATE_JUMP = hash("jump")
+local STATE_JUMP_START = hash("jump_start")
+local STATE_TURN = hash("turn")
+local state = STATE_STAND
+local facing = 1
+local current_position
+local guy_sprite
+local reset_state
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	msg.post("@render:", "use_camera_projection")
+	msg.post("camera", "acquire_camera_focus")
+	guy_sprite = msg.url(nil, "guy", "sprite")
+end
+
+local function get_cursor_pos(x, y)
+	return vmath.vector3(x, y, 0) * 0.4 * 2
+end
+
+local function jump_simple()
+	state = STATE_JUMP
+	if facing > 0 then
+		sprite.play_flipbook(guy_sprite, "run_right")
+	else
+		sprite.play_flipbook(guy_sprite, "run_left")
+	end
+	go.animate("guy", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 128 * facing, go.EASING_LINEAR, 1/2, 0, function() reset_state(STATE_JUMP) end)
+	go.animate("guy", "position.y", go.PLAYBACK_ONCE_FORWARD, current_position.y + 64, go.EASING_OUTSINE, 1/4)
+end
+
+local function jump_long()
+	state = STATE_JUMP
+	if facing > 0 then
+		sprite.play_flipbook(guy_sprite, "run_right")
+	else
+		sprite.play_flipbook(guy_sprite, "run_left")
+	end
+	go.animate("guy", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 192 * facing, go.EASING_LINEAR, 3/4, 0, function() reset_state(STATE_JUMP) end)
+	go.animate("guy", "position.y", go.PLAYBACK_ONCE_PINGPONG, current_position.y + 96, go.EASING_OUTSINE, 3/4)
+end
+
+function reset_state(condition)
+	if condition and not (state == condition) then
+		return
+	end
+	if state == STATE_JUMP_START then
+		jump_long()
+	elseif state == STATE_TURN then
+		state = STATE_STAND
+	else
+		current_position.x = math.ceil((current_position.x - 16) / 32) * 32
+		go.cancel_animations("guy", "position.x")
+		go.set("guy", "position.x", current_position.x)
+		state = STATE_STAND
+		timer.delay(0, false, function()
+			if state == STATE_STAND then
+				--sprite.play_flipbook(guy_sprite, "stand")
+			end
+		end)
+	end
+end
+
+local collision_vector_x = vmath.vector3(32, 0, 0)
+local collision_vector_y = vmath.vector3(0, 32, 0)
+
+function on_input(self, action_id, action)
+	if action_id == hash("key_left") and facing > 0 then
+		facing = -1
+		state = STATE_TURN
+		sprite.play_flipbook(guy_sprite, "turn_left", function() reset_state(STATE_TURN) end)
+	end
+	if action_id == hash("key_left") and state == STATE_STAND then
+		if not physics.raycast(current_position, current_position - collision_vector_x, {hash("ground")}) then
+			facing = -1
+			state = STATE_RUN
+			sprite.play_flipbook(guy_sprite, "run_left")
+			go.animate("guy", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x - 32, go.EASING_LINEAR, 1/6, 0, function() reset_state(STATE_RUN) end)
+		end
+	elseif action_id == hash("key_right") and state == STATE_STAND then
+		if facing < 0 then
+			facing = 1
+			state = STATE_TURN
+			sprite.play_flipbook(guy_sprite, "turn_right", function() reset_state(STATE_TURN) end)
+		elseif not physics.raycast(current_position, current_position + collision_vector_x, {hash("ground")}) then
+			facing = 1
+			state = STATE_RUN
+			sprite.play_flipbook(guy_sprite, "run_right")
+			go.animate("guy", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 32, go.EASING_LINEAR, 1/6, 0, function() reset_state(STATE_RUN) end)
+		end
+	elseif action_id == hash("key_up") and not (state == STATE_JUMP_START or state == STATE_JUMP) then
+		if not physics.raycast(current_position, current_position + collision_vector_y, {hash("ground")}) then
+			if state == STATE_STAND then
+				jump_simple()
+			else
+				state = STATE_JUMP_START
+			end
+		end
+	end
+end
+
+function update(self, dt)
+	current_position = go.get_world_position("guy")
+	if not physics.raycast(current_position, current_position - collision_vector_y, {hash("ground")}) then
+		current_position.y = current_position.y - 2
+		go.set("guy", "position.y", current_position.y)
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("light") then
+		table.insert(lights, sender)
+	end
+end

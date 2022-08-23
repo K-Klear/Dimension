@@ -1,0 +1,42 @@
+local lights = {}
+
+local no_colour = vmath.vector4(0)
+
+function update(self, dt)
+	if #lights > 2 then
+		local pos = go.get_world_position()
+		table.sort(lights, function(a, b) return vmath.length_sqr(pos - a.pos) < vmath.length_sqr(pos - b.pos) end)
+	end
+	local light_dir = vmath.vector4()
+	if lights[1] then
+		go.set("#sprite", "light_col_1", lights[1].colour)
+		light_dir.x = lights[1].pos.x
+		light_dir.y = lights[1].pos.y
+		if lights[2] then
+			go.set("#sprite", "light_col_2", lights[2].colour)
+			light_dir.z = lights[2].pos.x
+			light_dir.w = lights[2].pos.y
+		end
+	else
+		go.set("#sprite", "light_col_1", no_colour)
+	end
+	go.set("#sprite", "light_direction", light_dir)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("trigger_response") then
+		local light_url = msg.url(nil, message.other_id, "light")
+		if message.enter then
+			local colour = go.get(light_url, "colour")
+			local pos = go.get_world_position(message.other_id)
+			table.insert(lights, {go = message.other_id, colour = colour, pos = pos})
+		else
+			for key, val in ipairs(lights) do
+				if val.go == message.other_id then
+					table.remove(lights, key)
+					break
+				end
+			end
+		end
+	end
+end

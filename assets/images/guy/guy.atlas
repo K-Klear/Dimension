@@ -28,8 +28,8 @@ animations {
     image: "/assets/images/guy/run_06.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
-  playback: PLAYBACK_ONCE_FORWARD
-  fps: 48
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 12
   flip_horizontal: 0
   flip_vertical: 0
 }
@@ -59,8 +59,8 @@ animations {
     image: "/assets/images/guy/run_left_06.png"
     sprite_trim_mode: SPRITE_TRIM_MODE_OFF
   }
-  playback: PLAYBACK_ONCE_FORWARD
-  fps: 48
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 12
   flip_horizontal: 0
   flip_vertical: 0
 }

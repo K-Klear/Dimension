@@ -13,9 +13,100 @@ convex_hulls {
 convex_hulls {
   index: 4
   count: 4
+  collision_group: "ground"
+}
+convex_hulls {
+  index: 8
+  count: 4
+  collision_group: "ground"
+}
+convex_hulls {
+  index: 12
+  count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 16
+  count: 6
+  collision_group: "ladder"
+}
+convex_hulls {
+  index: 22
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 22
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 22
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 22
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 22
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 22
+  count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 26
+  count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 30
+  count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 34
+  count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 38
+  count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 42
+  count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 46
+  count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 50
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 50
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 50
+  count: 0
   collision_group: ""
 }
 collision_groups: "ground"
-extrude_borders: 0
+collision_groups: "ladder"
+extrude_borders: 2
 inner_padding: 0
 sprite_trim_mode: SPRITE_TRIM_MODE_OFF

@@ -1,6 +1,8 @@
 local lights = {}
 
 function init(self)
+	go.set("camera", "position.x", go.get_world_position("guy").x)
+	go.set("camera", "position.y", go.get_world_position("guy").y)
 	msg.post("@render:", "use_camera_projection")
 	msg.post("camera", "acquire_camera_focus")
 	guy_sprite = msg.url(nil, "guy", "sprite")
@@ -14,4 +16,15 @@ function on_message(self, message_id, message, sender)
 	if message_id == hash("light") then
 		table.insert(lights, sender)
 	end
+end
+
+function update(self, dt)
+	local cam_pos = go.get_world_position("camera")
+	local guy_pos = go.get_world_position("guy")
+	local diff_x = math.abs(cam_pos.x - guy_pos.x)
+	diff_x = (480 - diff_x) / 256
+	local diff_y = math.abs(cam_pos.y - guy_pos.y)
+	diff_y = (320 - diff_y) / 2048
+	go.animate("camera", "position.x", go.PLAYBACK_ONCE_FORWARD, go.get_world_position("guy").x, go.EASING_LINEAR, diff_x)
+	go.animate("camera", "position.y", go.PLAYBACK_ONCE_FORWARD, go.get_world_position("guy").y, go.EASING_INSINE, diff_y)
 end

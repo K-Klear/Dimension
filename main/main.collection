@@ -1,10 +1,30 @@
 name: "main"
 instances {
+  id: "guy"
+  prototype: "/main/guy.go"
+  position {
+    x: 1504.0
+    y: -544.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
   id: "light"
   prototype: "/main/light.go"
   position {
-    x: 638.0
-    y: 338.0
+    x: 537.0
+    y: 96.0
     z: 0.0
   }
   rotation {
@@ -17,7 +37,7 @@ instances {
     id: "light"
     properties {
       id: "colour"
-      value: "0.5, 0.0, 1.0, 1.0"
+      value: "1.0, 1.0, 0.0, 0.5"
       type: PROPERTY_TYPE_VECTOR4
     }
   }
@@ -28,11 +48,11 @@ instances {
   }
 }
 instances {
-  id: "guy"
-  prototype: "/main/guy.go"
+  id: "light1"
+  prototype: "/main/light.go"
   position {
-    x: 256.0
-    y: 352.0
+    x: 920.0
+    y: 69.0
     z: 0.0
   }
   rotation {
@@ -40,6 +60,14 @@ instances {
     y: 0.0
     z: 0.0
     w: 1.0
+  }
+  component_properties {
+    id: "light"
+    properties {
+      id: "colour"
+      value: "1.0, 0.0, 0.0, 0.3"
+      type: PROPERTY_TYPE_VECTOR4
+    }
   }
   scale3 {
     x: 1.0
@@ -106,7 +134,7 @@ embedded_instances {
   "mass: 0.0\\n"
   "friction: 0.1\\n"
   "restitution: 0.5\\n"
-  "group: \\\"ground\\\"\\n"
+  "group: \\\"ladder, ground\\\"\\n"
   "mask: \\\"player\\\"\\n"
   "linear_damping: 0.0\\n"
   "angular_damping: 0.0\\n"

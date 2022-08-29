@@ -1,12 +1,70 @@
 name: "default"
 scale_along_z: 0
 embedded_instances {
-  id: "go"
+  id: "controller"
+  data: "components {\n"
+  "  id: \"cube_controller\"\n"
+  "  component: \"/main/cube_controller.script\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "faces"
+  children: "front"
+  children: "left"
+  children: "right"
+  data: ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "front"
   data: "embedded_components {\n"
   "  id: \"model\"\n"
   "  type: \"model\"\n"
   "  data: \"mesh: \\\"/builtins/assets/meshes/quad.dae\\\"\\n"
-  "material: \\\"/render/cube.material\\\"\\n"
+  "material: \\\"/render/cube_2.material\\\"\\n"
   "skeleton: \\\"\\\"\\n"
   "animations: \\\"\\\"\\n"
   "default_animation: \\\"\\\"\\n"
@@ -43,12 +101,12 @@ embedded_instances {
   }
 }
 embedded_instances {
-  id: "go1"
+  id: "left"
   data: "embedded_components {\n"
   "  id: \"model\"\n"
   "  type: \"model\"\n"
   "  data: \"mesh: \\\"/builtins/assets/meshes/quad.dae\\\"\\n"
-  "material: \\\"/render/cube.material\\\"\\n"
+  "material: \\\"/render/cube_1.material\\\"\\n"
   "skeleton: \\\"\\\"\\n"
   "animations: \\\"\\\"\\n"
   "default_animation: \\\"\\\"\\n"
@@ -85,12 +143,12 @@ embedded_instances {
   }
 }
 embedded_instances {
-  id: "go2"
+  id: "right"
   data: "embedded_components {\n"
   "  id: \"model\"\n"
   "  type: \"model\"\n"
   "  data: \"mesh: \\\"/builtins/assets/meshes/quad.dae\\\"\\n"
-  "material: \\\"/render/cube.material\\\"\\n"
+  "material: \\\"/render/cube_3.material\\\"\\n"
   "skeleton: \\\"\\\"\\n"
   "animations: \\\"\\\"\\n"
   "default_animation: \\\"\\\"\\n"

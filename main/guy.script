@@ -9,11 +9,13 @@ local STATE_JUMP = hash("jump")
 local STATE_JUMP_START = hash("jump_start")
 local STATE_TURN = hash("turn")
 local STATE_FALL = hash("fall")
+local STATE_PAUSED = hash("pause")
 local state = STATE_STAND
 local facing = 1
 local current_position
 local reset_state
 local state_timer
+local touching_ground = false
 local touching_ladder = false
 
 local GRAVITY = 0.5
@@ -71,11 +73,13 @@ function state_reset_fn.ladder()
 	go.set(".", "position.y", current_position.y)
 	state = STATE_STAND
 end
-function state_reset_fn.walk()
-
+function state_reset_fn.pause()
+	current_position.x = math.ceil((current_position.x - 16) / 32) * 32
+	go.cancel_animations(".", "position.x")
+	go.set(".", "position.x", current_position.x)
+	sprite.play_flipbook("#sprite", sprite_animations[facing].stand)
+	state = STATE_PAUSED
 end
-
-
 
 local function set_state_timer(duration, fn)
 	if state_timer then
@@ -105,163 +109,186 @@ local function update_lights()
 	go.set("#sprite", "light_direction", light_dir)
 end
 
-function update(self, dt)
-	local touching_ground = physics.raycast(current_position, current_position - collision_vector_y, {hash("ground")})
-	current_position = go.get_world_position(".")
-	if state == STATE_STAND then
-		if INPUT[hash("key_up")] then
-			local blocked_above = physics.raycast(current_position, current_position + collision_vector_y, {hash("ground")})
-			if touching_ladder and not blocked_above then
-				local duration = get_run_speed(32) * 2
-				go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, current_position.y + 32, go.EASING_LINEAR, duration)
-				state = STATE_LADDER
-				sprite.play_flipbook("#sprite", sprite_animations[facing].ladder)
-				set_state_timer(duration, "ladder")
-			elseif touching_ground and not blocked_above then
-				local ray = physics.raycast(current_position, current_position + collision_vector_x * facing, {hash("ground")})
-				local ray_2 = physics.raycast(current_position + collision_vector_y * 2, current_position + collision_vector_y * 2 + collision_vector_x * facing, {hash("ground")})
-				if ray and not ray_2 then
-					local duration = get_run_speed(64)
-					go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 64 * facing, go.EASING_INSINE, duration)
-					go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, current_position.y + 64, go.EASING_OUTSINE, duration)
-					state = STATE_RUN
-					sprite.play_flipbook("#sprite", sprite_animations[facing].climb)
-					set_state_timer(duration, "run")
-				elseif movement_vector.x == 0 then
-					movement_vector.y = 9
-					go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 128 * facing, go.EASING_LINEAR, get_run_speed(128) * 1.1)
-					state = STATE_FALL
-					touching_ground = false
-					sprite.play_flipbook("#sprite", sprite_animations[facing].jump)
-				else
-					movement_vector.y = 12
-					go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 256 * facing, go.EASING_LINEAR, get_run_speed(256) * 1)
-					state = STATE_FALL
-					touching_ground = false
-					sprite.play_flipbook("#sprite", sprite_animations[facing].jump)
-					movement_vector.x = facing
-				end
-			end
-		elseif INPUT[hash("key_down")] and touching_ladder then
-			local blocked_below = physics.raycast(current_position, current_position - collision_vector_y, {hash("ground")})
-			if not blocked_below then
-				local duration = get_run_speed(32) * 2
-				go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, current_position.y - 32, go.EASING_LINEAR, duration)
-				state = STATE_LADDER
-				sprite.play_flipbook("#sprite", sprite_animations[facing].ladder)
-				set_state_timer(duration, "ladder")
-			end
-		elseif INPUT[hash("key_right")] then
-			if facing < 0 then
-				if movement_vector.x == 0 then
-					facing = 1
-					sprite.play_flipbook("#sprite", sprite_animations[facing].turn)
-					state = STATE_TURN
-					set_state_timer(0.5, "turn")
-					movement_vector.x = 0
-				elseif movement_vector.x == -1 then
-					facing = 1
-					state = STATE_TURN
-					sprite.play_flipbook("#sprite", sprite_animations[facing].turn)
-					set_state_timer(0.5, "turn")
-					movement_vector.x = 0
-				elseif movement_vector.x == -2 then
-					if physics.raycast(current_position, current_position - collision_vector_x, {hash("ground")}) then
-						sprite.play_flipbook("#sprite", sprite_animations[facing].stand)
-						movement_vector.x = 0
-					else
-						local duration = get_run_speed(32)
-						go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x - 32, go.EASING_LINEAR, duration)
-						set_state_timer(0.5, "run_turn_right")
-						facing = 1
-						movement_vector.x = 1
-						state = STATE_RUN
-						sprite.play_flipbook("#sprite", sprite_animations[facing].turn)
-					end
-				end
-			elseif physics.raycast(current_position, current_position + collision_vector_x, {hash("ground")}) then
-				sprite.play_flipbook("#sprite", sprite_animations[facing].stand)
-				movement_vector.x = 0
+local update_fn = {}
+
+update_fn[STATE_STAND] = function(self, dt)
+	if INPUT[hash("key_up")] then
+		local blocked_above = physics.raycast(current_position, current_position + collision_vector_y, {hash("ground")})
+		if touching_ladder and not blocked_above then
+			local duration = get_run_speed(32) * 2
+			go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, current_position.y + 32, go.EASING_LINEAR, duration)
+			state = STATE_LADDER
+			sprite.play_flipbook("#sprite", sprite_animations[facing].ladder)
+			set_state_timer(duration, "ladder")
+		elseif touching_ground and not blocked_above then
+			local ray = physics.raycast(current_position, current_position + collision_vector_x * facing, {hash("ground")})
+			local ray_2 = physics.raycast(current_position + collision_vector_y * 2, current_position + collision_vector_y * 2 + collision_vector_x * facing, {hash("ground")})
+			if ray and not ray_2 then
+				local duration = get_run_speed(64)
+				go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 64 * facing, go.EASING_INSINE, duration)
+				go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, current_position.y + 64, go.EASING_OUTSINE, duration)
+				state = STATE_RUN
+				sprite.play_flipbook("#sprite", sprite_animations[facing].climb)
+				set_state_timer(duration, "run")
 			elseif movement_vector.x == 0 then
-				movement_vector.x = 1
+				movement_vector.y = 9
+				go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 128 * facing, go.EASING_LINEAR, get_run_speed(128) * 1.1)
+				state = STATE_FALL
+				touching_ground = false
+				sprite.play_flipbook("#sprite", sprite_animations[facing].jump)
+			else
+				movement_vector.y = 12
+				go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 256 * facing, go.EASING_LINEAR, get_run_speed(256) * 1)
+				state = STATE_FALL
+				touching_ground = false
+				sprite.play_flipbook("#sprite", sprite_animations[facing].jump)
+				movement_vector.x = facing
+			end
+		end
+	elseif INPUT[hash("key_down")] and touching_ladder then
+		local blocked_below = physics.raycast(current_position, current_position - collision_vector_y, {hash("ground")})
+		if not blocked_below then
+			local duration = get_run_speed(32) * 2
+			go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, current_position.y - 32, go.EASING_LINEAR, duration)
+			state = STATE_LADDER
+			sprite.play_flipbook("#sprite", sprite_animations[facing].ladder)
+			set_state_timer(duration, "ladder")
+		end
+	elseif INPUT[hash("key_right")] then
+		if facing < 0 then
+			if movement_vector.x == 0 then
 				facing = 1
-				state = STATE_RUN
-				sprite.play_flipbook("#sprite", sprite_animations[facing].run)
-				local duration = get_run_speed(32)
-				go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 32, go.EASING_LINEAR, duration)
-				set_state_timer(duration, "run")
-			elseif movement_vector.x == 1 then
-				movement_vector.x = 2
-				state = STATE_RUN
-				local duration = get_run_speed(32)
-				go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 32, go.EASING_LINEAR, duration)
-				set_state_timer(duration, "run")
-			else
-				state = STATE_RUN
-				local duration = get_run_speed(32)
-				go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 32, go.EASING_LINEAR, duration)
-				set_state_timer(duration, "run")
-			end
-		elseif INPUT[hash("key_left")] then
-			if facing > 0 then
-				if movement_vector.x == 0 then
-					facing = -1
-					sprite.play_flipbook("#sprite", sprite_animations[facing].turn)
-					state = STATE_TURN
-					set_state_timer(0.5, "turn")
-					movement_vector.x = 0
-				elseif movement_vector.x == 1 then
-					facing = -1
-					state = STATE_TURN
-					sprite.play_flipbook("#sprite", sprite_animations[facing].turn)
-					set_state_timer(0.5, "turn")
-					movement_vector.x = 0
-				elseif movement_vector.x == 2 then
-					if physics.raycast(current_position, current_position + collision_vector_x, {hash("ground")}) then
-						sprite.play_flipbook("#sprite", sprite_animations[facing].stand)
-						movement_vector.x = 0
-					else
-						go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 32, go.EASING_LINEAR, get_run_speed(32))
-						set_state_timer(0.5, "run_turn_left")
-						facing = -1
-						movement_vector.x = -1
-						state = STATE_RUN
-						sprite.play_flipbook("#sprite", sprite_animations[facing].turn)
-					end
-				end
-			elseif physics.raycast(current_position, current_position - collision_vector_x, {hash("ground")}) then
-				sprite.play_flipbook("#sprite", sprite_animations[facing].stand)
+				sprite.play_flipbook("#sprite", sprite_animations[facing].turn)
+				state = STATE_TURN
+				set_state_timer(0.5, "turn")
 				movement_vector.x = 0
-			elseif movement_vector.x == 0 then
-				movement_vector.x = -1
-				facing = -1
-				state = STATE_RUN
-				sprite.play_flipbook("#sprite", sprite_animations[facing].run)
-				local duration = get_run_speed(32)
-				go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x - 32, go.EASING_LINEAR, duration)
-				set_state_timer(duration, "run")
 			elseif movement_vector.x == -1 then
-				movement_vector.x = -2
-				state = STATE_RUN
-				local duration = get_run_speed(32)
-				go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x - 32, go.EASING_LINEAR, duration)
-				set_state_timer(duration, "run")
-			else
-				state = STATE_RUN
-				local duration = get_run_speed(32)
-				go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x - 32, go.EASING_LINEAR, duration)
-				set_state_timer(duration, "run")
+				facing = 1
+				state = STATE_TURN
+				sprite.play_flipbook("#sprite", sprite_animations[facing].turn)
+				set_state_timer(0.5, "turn")
+				movement_vector.x = 0
+			elseif movement_vector.x == -2 then
+				if physics.raycast(current_position, current_position - collision_vector_x, {hash("ground")}) then
+					sprite.play_flipbook("#sprite", sprite_animations[facing].stand)
+					movement_vector.x = 0
+				else
+					local duration = get_run_speed(32)
+					go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x - 32, go.EASING_LINEAR, duration)
+					set_state_timer(0.5, "run_turn_right")
+					facing = 1
+					movement_vector.x = 1
+					state = STATE_RUN
+					sprite.play_flipbook("#sprite", sprite_animations[facing].turn)
+				end
 			end
-		else
+		elseif physics.raycast(current_position, current_position + collision_vector_x, {hash("ground")}) then
 			sprite.play_flipbook("#sprite", sprite_animations[facing].stand)
 			movement_vector.x = 0
+		elseif movement_vector.x == 0 then
+			movement_vector.x = 1
+			facing = 1
+			state = STATE_RUN
+			sprite.play_flipbook("#sprite", sprite_animations[facing].run)
+			local duration = get_run_speed(32)
+			go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 32, go.EASING_LINEAR, duration)
+			set_state_timer(duration, "run")
+		elseif movement_vector.x == 1 then
+			movement_vector.x = 2
+			state = STATE_RUN
+			local duration = get_run_speed(32)
+			go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 32, go.EASING_LINEAR, duration)
+			set_state_timer(duration, "run")
+		else
+			state = STATE_RUN
+			local duration = get_run_speed(32)
+			go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 32, go.EASING_LINEAR, duration)
+			set_state_timer(duration, "run")
 		end
-	elseif state == STATE_FALL then
-		local ray = physics.raycast(current_position, current_position + collision_vector_x * facing, {hash("ground")})
-		if ray then
-			go.cancel_animations(".", "position.x")
-			current_position.x = ray.position.x - 32 * facing
+	elseif INPUT[hash("key_left")] then
+		if facing > 0 then
+			if movement_vector.x == 0 then
+				facing = -1
+				sprite.play_flipbook("#sprite", sprite_animations[facing].turn)
+				state = STATE_TURN
+				set_state_timer(0.5, "turn")
+				movement_vector.x = 0
+			elseif movement_vector.x == 1 then
+				facing = -1
+				state = STATE_TURN
+				sprite.play_flipbook("#sprite", sprite_animations[facing].turn)
+				set_state_timer(0.5, "turn")
+				movement_vector.x = 0
+			elseif movement_vector.x == 2 then
+				if physics.raycast(current_position, current_position + collision_vector_x, {hash("ground")}) then
+					sprite.play_flipbook("#sprite", sprite_animations[facing].stand)
+					movement_vector.x = 0
+				else
+					go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x + 32, go.EASING_LINEAR, get_run_speed(32))
+					set_state_timer(0.5, "run_turn_left")
+					facing = -1
+					movement_vector.x = -1
+					state = STATE_RUN
+					sprite.play_flipbook("#sprite", sprite_animations[facing].turn)
+				end
+			end
+		elseif physics.raycast(current_position, current_position - collision_vector_x, {hash("ground")}) then
+			sprite.play_flipbook("#sprite", sprite_animations[facing].stand)
+			movement_vector.x = 0
+		elseif movement_vector.x == 0 then
+			movement_vector.x = -1
+			facing = -1
+			state = STATE_RUN
+			sprite.play_flipbook("#sprite", sprite_animations[facing].run)
+			local duration = get_run_speed(32)
+			go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x - 32, go.EASING_LINEAR, duration)
+			set_state_timer(duration, "run")
+		elseif movement_vector.x == -1 then
+			movement_vector.x = -2
+			state = STATE_RUN
+			local duration = get_run_speed(32)
+			go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x - 32, go.EASING_LINEAR, duration)
+			set_state_timer(duration, "run")
+		else
+			state = STATE_RUN
+			local duration = get_run_speed(32)
+			go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD, current_position.x - 32, go.EASING_LINEAR, duration)
+			set_state_timer(duration, "run")
 		end
+	else
+		sprite.play_flipbook("#sprite", sprite_animations[facing].stand)
+		movement_vector.x = 0
+	end
+end
+
+update_fn[STATE_FALL] = function(self, dt)
+	local ray = physics.raycast(current_position, current_position + collision_vector_x * facing, {hash("ground")})
+	if ray then
+		go.cancel_animations(".", "position.x")
+		current_position.x = ray.position.x - 32 * facing
+	end
+end
+
+local function finish_movement(end_state)
+	state = STATE_RUN
+	go.cancel_animations(".", "position.x")
+	local target_x
+	if facing > 0 then
+		target_x = math.ceil(current_position.x / 32) * 32
+	else
+		target_x = math.floor(current_position.x / 32) * 32
+	end
+	local duration = get_run_speed(math.abs(target_x - current_position.x))
+	go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD,target_x, go.EASING_LINEAR, duration)
+	sprite.play_flipbook("#sprite", sprite_animations[facing].run)
+	set_state_timer(duration, end_state)
+end
+
+function update(self, dt)
+	touching_ground = physics.raycast(current_position, current_position - collision_vector_y, {hash("ground")})
+	current_position = go.get_world_position(".")
+	if update_fn[state] then
+		update_fn[state](self, dt)
 	end
 
 	movement_vector.y = movement_vector.y - GRAVITY
@@ -284,19 +311,7 @@ function update(self, dt)
 				movement_vector.y = (ray.position.y + 32) - current_position.y
 				stop_falling = true
 				if state == STATE_FALL then
-					state = STATE_RUN
-					--movement_vector.x = facing
-					go.cancel_animations(".", "position.x")
-					local target_x
-					if facing > 0 then
-						target_x = math.ceil(current_position.x / 32) * 32
-					else
-						target_x = math.floor(current_position.x / 32) * 32
-					end
-					local duration = get_run_speed(math.abs(target_x - current_position.x))
-					go.animate(".", "position.x", go.PLAYBACK_ONCE_FORWARD,target_x, go.EASING_LINEAR, duration)
-					sprite.play_flipbook("#sprite", sprite_animations[facing].run)
-					set_state_timer(duration, "run")
+					finish_movement("run")
 				end
 			end
 		end
@@ -318,8 +333,7 @@ function on_message(self, message_id, message, sender)
 				touching_ladder = true
 			end
 		end
-	end
-	if message_id == hash("trigger_response") then
+	elseif message_id == hash("trigger_response") then
 		if message.other_group == hash("light_source") then
 			local light_url = msg.url(nil, message.other_id, "light")
 			if message.enter then
@@ -335,6 +349,8 @@ function on_message(self, message_id, message, sender)
 				end
 			end
 		end
+	elseif message_id == hash("stop") then
+		finish_movement("pause")
 	end
 end
 

@@ -1,6 +1,6 @@
 components {
-  id: "guy"
-  component: "/main/guy.script"
+  id: "trigger"
+  component: "/main/trigger.script"
   position {
     x: 0.0
     y: 0.0
@@ -14,37 +14,15 @@ components {
   }
 }
 embedded_components {
-  id: "sprite"
-  type: "sprite"
-  data: "tile_set: \"/assets/images/guy/guy.atlas\"\n"
-  "default_animation: \"stand_right\"\n"
-  "material: \"/main/sprite_light.material\"\n"
-  "blend_mode: BLEND_MODE_ALPHA\n"
-  ""
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-}
-embedded_components {
-  id: "collisionobject"
+  id: "co"
   type: "collisionobject"
   data: "collision_shape: \"\"\n"
   "type: COLLISION_OBJECT_TYPE_TRIGGER\n"
   "mass: 0.0\n"
   "friction: 0.1\n"
   "restitution: 0.5\n"
-  "group: \"player\"\n"
-  "mask: \"light_source\"\n"
-  "mask: \"ladder\"\n"
-  "mask: \"trigger\"\n"
+  "group: \"trigger\"\n"
+  "mask: \"player\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_BOX\n"

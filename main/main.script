@@ -1,11 +1,13 @@
 local lights = {}
 
+local cam_follow = true
+local cam_follow_cube = false
+
 function init(self)
 	go.set("camera", "position.x", go.get_world_position("guy").x)
 	go.set("camera", "position.y", go.get_world_position("guy").y)
 	msg.post("@render:", "use_camera_projection")
 	msg.post("camera", "acquire_camera_focus")
-	guy_sprite = msg.url(nil, "guy", "sprite")
 end
 
 local function get_cursor_pos(x, y)
@@ -15,16 +17,41 @@ end
 function on_message(self, message_id, message, sender)
 	if message_id == hash("light") then
 		table.insert(lights, sender)
+	elseif message_id == hash("spawn_cube") then
+		cam_follow = false
+		go.animate("camera", "euler.y", go.PLAYBACK_ONCE_FORWARD, -45, go.EASING_INOUTSINE, 5)
+		go.cancel_animations("camera", "position")
+		go.animate("camera", "position", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1400, -550, 600), go.EASING_INOUTSINE, 5)
+	elseif message_id == hash("set_tiles_for_cube") then
+		for x = 27, 31 do
+			tilemap.set_tile("#homeworld_01", "ground", x, -5, 14)
+			tilemap.set_tile("#homeworld_01", "ground", x, -6, 13)
+			tilemap.set_tile("#homeworld_01", "ground", x, -7, 12)
+			tilemap.set_tile("#homeworld_01", "ground", x, -8, 11)
+			tilemap.set_tile("#homeworld_01", "ground", x, -9, 2)
+		end
+	elseif message_id == hash("follow_cube") then
+		cam_follow_cube = true
 	end
 end
 
 function update(self, dt)
-	local cam_pos = go.get_world_position("camera")
-	local guy_pos = go.get_world_position("guy")
-	local diff_x = math.abs(cam_pos.x - guy_pos.x)
-	diff_x = (480 - diff_x) / 256
-	local diff_y = math.abs(cam_pos.y - guy_pos.y)
-	diff_y = (320 - diff_y) / 2048
-	go.animate("camera", "position.x", go.PLAYBACK_ONCE_FORWARD, go.get_world_position("guy").x, go.EASING_LINEAR, diff_x)
-	go.animate("camera", "position.y", go.PLAYBACK_ONCE_FORWARD, go.get_world_position("guy").y, go.EASING_INSINE, diff_y)
+	if cam_follow then
+		local cam_pos = go.get_world_position("camera")
+		local guy_pos = go.get_world_position("guy")
+		local diff_x = math.abs(cam_pos.x - guy_pos.x)
+		diff_x = (480 - diff_x) / 256
+		local diff_y = math.abs(cam_pos.y - guy_pos.y)
+		diff_y = (320 - diff_y) / 2048
+		go.animate("camera", "position.x", go.PLAYBACK_ONCE_FORWARD, go.get_world_position("guy").x, go.EASING_LINEAR, diff_x)
+		go.animate("camera", "position.y", go.PLAYBACK_ONCE_FORWARD, go.get_world_position("guy").y, go.EASING_INSINE, diff_y)
+	elseif cam_follow_cube then
+		local pos_x = go.get_world_position("guy").x - 1664 - 480
+		pos_x = pos_x / 480
+		if not (math.abs(pos_x) > 1) then
+			go.set("camera", "euler.y", 45 * pos_x)
+			go.set("camera", "position.x", 1400 + (800 * (pos_x + 1) / 2))
+			go.set("camera", "position.z", 600 + ((1 - math.abs(pos_x)) * 300))
+		end
+	end
 end

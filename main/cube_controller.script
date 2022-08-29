@@ -1,0 +1,23 @@
+local function hide()
+	msg.post("front", hash("disable"))
+	msg.post("left", hash("disable"))
+	msg.post("right", hash("disable"))
+end
+
+local function show()
+	msg.post("front", hash("enable"))
+	msg.post("left", hash("enable"))
+	msg.post("right", hash("enable"))
+end
+
+function init(self)
+	hide()
+	go.set("faces", "position.z", 640)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("spawn") then
+		show()
+		go.animate("faces", "position.z", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTSINE, 2)
+	end
+end

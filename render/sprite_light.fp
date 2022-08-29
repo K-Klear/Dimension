@@ -18,7 +18,7 @@ void main()
     {
         lowp vec2 direction = light_direction.xy - gl_FragCoord.xy;
         lowp float distance = length(direction) * max_distance_divisor;
-        lowp float intensity = max(light_col_1.w - distance, 0.0) * 0.3333;
+        lowp float intensity = max(light_col_1.w - distance, 0.0) * 0.5333;
         direction = normalize(direction) * sprite_size * sqrt(distance) * 3.0;
         
         if (texture2D(texture_sampler, var_texcoord0 + direction).w < alpha_threshold)

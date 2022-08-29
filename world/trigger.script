@@ -11,15 +11,10 @@ trigger_fn[hash("spawn_cube")] = function()
 	end)
 	timer.delay(4.5, false, function()
 		msg.post("main", hash("set_tiles_for_cube"))
-		msg.post("@render:", hash("set_cube_position"), {x = 26, y = -10, size = 5})
+		msg.post("@render:", hash("set_cube_position"), {x = 28, y = -9, size = 5})
 		msg.post("main", hash("follow_cube"))
 		go.delete()
 	end)
-end
-trigger_fn[hash("teleport_to_cube")] = function()
-	go.set("guy", "position.y", go.get_world_position("guy").y + 24 * 64)
-	msg.post("@render:", hash("set_cube_position"), {x = 26, y = 14, size = 5})
-	go.delete()
 end
 
 function on_message(self, message_id, message, sender)

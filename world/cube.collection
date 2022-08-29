@@ -4,7 +4,7 @@ embedded_instances {
   id: "controller"
   data: "components {\n"
   "  id: \"cube_controller\"\n"
-  "  component: \"/main/cube_controller.script\"\n"
+  "  component: \"/world/cube_controller.script\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"

@@ -1,7 +1,7 @@
 name: "main"
 instances {
   id: "guy"
-  prototype: "/main/guy.go"
+  prototype: "/world/guy.go"
   position {
     x: 1280.0
     y: -544.0
@@ -21,7 +21,7 @@ instances {
 }
 instances {
   id: "light"
-  prototype: "/main/light.go"
+  prototype: "/world/light.go"
   position {
     x: 537.0
     y: 96.0
@@ -49,10 +49,10 @@ instances {
 }
 instances {
   id: "light1"
-  prototype: "/main/light.go"
+  prototype: "/world/light.go"
   position {
-    x: 920.0
-    y: 69.0
+    x: 1718.0
+    y: -617.0
     z: 0.0
   }
   rotation {
@@ -65,22 +65,22 @@ instances {
     id: "light"
     properties {
       id: "colour"
-      value: "1.0, 0.0, 0.0, 0.3"
+      value: "1.0, 0.0, 0.0, 1.0"
       type: PROPERTY_TYPE_VECTOR4
     }
   }
   scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
+    x: 0.3
+    y: 0.3
+    z: 0.3
   }
 }
 instances {
-  id: "trigger"
-  prototype: "/main/trigger.go"
+  id: "portal_part"
+  prototype: "/world/portal_part.go"
   position {
-    x: 1632.0
-    y: -544.0
+    x: 1766.0
+    y: -602.0
     z: 0.0
   }
   rotation {
@@ -88,14 +88,6 @@ instances {
     y: 0.0
     z: 0.0
     w: 1.0
-  }
-  component_properties {
-    id: "trigger"
-    properties {
-      id: "script"
-      value: "spawn_cube"
-      type: PROPERTY_TYPE_HASH
-    }
   }
   scale3 {
     x: 1.0
@@ -104,26 +96,58 @@ instances {
   }
 }
 instances {
-  id: "trigger1"
-  prototype: "/main/trigger.go"
+  id: "portal_part1"
+  prototype: "/world/portal_part.go"
   position {
-    x: 1888.0
-    y: -544.0
+    x: 2138.0
+    y: -602.0
     z: 0.0
   }
   rotation {
     x: 0.0
     y: 0.0
-    z: 0.0
-    w: 1.0
+    z: 0.70710677
+    w: 0.70710677
   }
-  component_properties {
-    id: "trigger"
-    properties {
-      id: "script"
-      value: "teleport_to_cube"
-      type: PROPERTY_TYPE_HASH
-    }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "portal_part2"
+  prototype: "/world/portal_part.go"
+  position {
+    x: 1766.0
+    y: -230.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: -0.70710677
+    w: 0.70710677
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "portal_part3"
+  prototype: "/world/portal_part.go"
+  position {
+    x: 2138.0
+    y: -230.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 1.0
+    w: 6.123234E-17
   }
   scale3 {
     x: 1.0
@@ -133,10 +157,10 @@ instances {
 }
 collection_instances {
   id: "cube"
-  collection: "/main/cube.collection"
+  collection: "/world/cube.collection"
   position {
-    x: 1824.0
-    y: -480.0
+    x: 1952.0
+    y: -416.0
     z: 0.0
   }
   rotation {
@@ -187,7 +211,7 @@ embedded_instances {
   "embedded_components {\n"
   "  id: \"factory\"\n"
   "  type: \"factory\"\n"
-  "  data: \"prototype: \\\"/main/guy.go\\\"\\n"
+  "  data: \"prototype: \\\"/world/guy.go\\\"\\n"
   "load_dynamically: false\\n"
   "\"\n"
   "  position {\n"

@@ -1,6 +1,6 @@
 components {
   id: "guy"
-  component: "/main/guy.script"
+  component: "/world/guy.script"
   position {
     x: 0.0
     y: 0.0
@@ -16,9 +16,9 @@ components {
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "tile_set: \"/assets/images/guy/guy.atlas\"\n"
+  data: "tile_set: \"/assets/guy.atlas\"\n"
   "default_animation: \"stand_right\"\n"
-  "material: \"/main/sprite_light.material\"\n"
+  "material: \"/render/sprite_light.material\"\n"
   "blend_mode: BLEND_MODE_ALPHA\n"
   ""
   position {

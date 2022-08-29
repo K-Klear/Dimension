@@ -1,6 +1,12 @@
 go.property("colour", vmath.vector4(1, 1, 1, 1))
 
 function init(self)
+	print(go.get_scale())
+	local scale = go.get_scale().x
+	if scale == 1 then
+		go.set_scale(self.colour.w)
+	else
+		self.colour.w = scale
+	end
 	go.set("#sprite", "tint", vmath.vector4(self.colour.x, self.colour.y, self.colour.z, 1))
-	go.set_scale(self.colour.w)
 end

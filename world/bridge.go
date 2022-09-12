@@ -1,30 +1,15 @@
-components {
-  id: "guy"
-  component: "/world/guy.script"
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-}
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "tile_set: \"/assets/guy.atlas\"\n"
-  "default_animation: \"stand_right\"\n"
-  "material: \"/render/sprite_light.material\"\n"
+  data: "tile_set: \"/assets/props.atlas\"\n"
+  "default_animation: \"bridge\"\n"
+  "material: \"/builtins/materials/sprite.material\"\n"
   "blend_mode: BLEND_MODE_ALPHA\n"
   ""
   position {
     x: 0.0
-    y: 0.0
-    z: 1.0
+    y: 16.0
+    z: 0.0
   }
   rotation {
     x: 0.0
@@ -34,24 +19,21 @@ embedded_components {
   }
 }
 embedded_components {
-  id: "collisionobject"
+  id: "co"
   type: "collisionobject"
   data: "collision_shape: \"\"\n"
-  "type: COLLISION_OBJECT_TYPE_TRIGGER\n"
+  "type: COLLISION_OBJECT_TYPE_KINEMATIC\n"
   "mass: 0.0\n"
   "friction: 0.1\n"
   "restitution: 0.5\n"
-  "group: \"player\"\n"
-  "mask: \"light_source\"\n"
-  "mask: \"ladder\"\n"
-  "mask: \"trigger\"\n"
-  "mask: \"button\"\n"
+  "group: \"ground\"\n"
+  "mask: \"player\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_BOX\n"
   "    position {\n"
   "      x: 0.0\n"
-  "      y: 0.0\n"
+  "      y: 16.0\n"
   "      z: 0.0\n"
   "    }\n"
   "    rotation {\n"
@@ -63,8 +45,8 @@ embedded_components {
   "    index: 0\n"
   "    count: 3\n"
   "  }\n"
-  "  data: 32.0\n"
-  "  data: 32.0\n"
+  "  data: 64.0\n"
+  "  data: 16.0\n"
   "  data: 10.0\n"
   "}\n"
   "linear_damping: 0.0\n"

@@ -1,11 +1,18 @@
 local cam_follow = true
 local cam_follow_cube = false
+local cam_mouse = false
+local cam_target = vmath.vector3(0)
 
 function init(self)
 	go.set("camera", "position.x", go.get_world_position("guy").x)
 	go.set("camera", "position.y", go.get_world_position("guy").y)
 	msg.post("@render:", "use_camera_projection")
 	msg.post("camera", "acquire_camera_focus")
+	msg.post(".", "acquire_input_focus")
+	timer.delay(0.1, false, function()
+		cam_follow = false
+		cam_mouse = true
+	end)
 end
 
 local function get_cursor_pos(x, y)
@@ -14,10 +21,7 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("spawn_cube") then
-		cam_follow = false
-		go.animate("camera", "euler.y", go.PLAYBACK_ONCE_FORWARD, -45, go.EASING_INOUTSINE, 5)
-		go.cancel_animations("camera", "position")
-		go.animate("camera", "position", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1400, -550, 600), go.EASING_INOUTSINE, 5)
+
 	elseif message_id == hash("set_tiles_for_cube") then
 		for x = 29, 33 do
 			tilemap.set_tile("#homeworld_01", "ground", x, -4, 14)
@@ -41,6 +45,16 @@ function update(self, dt)
 		diff_y = (320 - diff_y) / 2048
 		go.animate("camera", "position.x", go.PLAYBACK_ONCE_FORWARD, go.get_world_position("guy").x, go.EASING_LINEAR, diff_x)
 		go.animate("camera", "position.y", go.PLAYBACK_ONCE_FORWARD, go.get_world_position("guy").y, go.EASING_INSINE, diff_y)
+	elseif cam_mouse then
+		local cam_pos = go.get_world_position("camera")
+		local guy_pos = go.get_world_position("guy") + cam_target
+		local diff_x = math.abs(cam_pos.x - guy_pos.x)
+		diff_x = (480 - diff_x) / 256
+		local diff_y = math.abs(cam_pos.y - guy_pos.y)
+		diff_y = (320 - diff_y) / 2048
+		go.animate("camera", "position.x", go.PLAYBACK_ONCE_FORWARD, guy_pos.x, go.EASING_LINEAR, diff_x)
+		go.animate("camera", "position.y", go.PLAYBACK_ONCE_FORWARD, guy_pos.y, go.EASING_INSINE, diff_y)
+		--cam_target.x = cam_target.x 
 	elseif cam_follow_cube then
 		local pos_x = go.get_world_position("guy").x - 1664 - 480
 		pos_x = pos_x / 480
@@ -49,5 +63,13 @@ function update(self, dt)
 			go.set("camera", "position.x", 1400 + (800 * (pos_x + 1) / 2))
 			go.set("camera", "position.z", 600 + ((1 - math.abs(pos_x)) * 300))
 		end
+	end
+end
+
+function on_input(self, action_id, action)
+	if cam_mouse and not action_id then
+		--cam_target.x = cam_target.x + action.dx
+		--cam_target.y = cam_target.y + action.dy
+		cam_target = vmath.vector3(action.x - 480, action.y - 320, 0)
 	end
 end

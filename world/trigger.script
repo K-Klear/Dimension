@@ -16,6 +16,11 @@ trigger_fn[hash("spawn_cube")] = function()
 		go.delete()
 	end)
 end
+trigger_fn[hash("kill_bridge")] = function()
+	msg.post("bridge2#co", hash("disable"))
+	go.animate("bridge2", "position.y", go.PLAYBACK_ONCE_FORWARD, -704, go.EASING_INSINE, 1)
+	go.delete()
+end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("trigger_response") and message.enter then

@@ -36,7 +36,7 @@ void main()
         
         direction = light_direction.zw - gl_FragCoord.xy;
         distance = length(direction) * max_distance_divisor;
-        intensity = max(light_col_2.w - distance, 0.0) * 0.3333;
+        intensity = max(light_col_2.w - distance, 0.0) * 0.5333;
         direction = normalize(direction) * sprite_size * sqrt(distance) * 3.0;
 
         if (texture2D(texture_sampler, var_texcoord0 + direction).w < alpha_threshold)

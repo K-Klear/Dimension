@@ -3,8 +3,8 @@ instances {
   id: "guy"
   prototype: "/world/guy.go"
   position {
-    x: 1280.0
-    y: -544.0
+    x: 1440.0
+    y: -416.0
     z: 0.0
   }
   rotation {
@@ -20,11 +20,71 @@ instances {
   }
 }
 instances {
-  id: "light"
-  prototype: "/world/light.go"
+  id: "bridge1"
+  prototype: "/world/bridge.go"
   position {
-    x: 537.0
-    y: 96.0
+    x: 2112.0
+    y: -160.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "bridge2"
+  prototype: "/world/bridge.go"
+  position {
+    x: 1984.0
+    y: -160.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "bridge3"
+  prototype: "/world/bridge.go"
+  position {
+    x: 1856.0
+    y: -160.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "trigger"
+  prototype: "/world/trigger.go"
+  position {
+    x: 1670.0
+    y: -97.0
     z: 0.0
   }
   rotation {
@@ -34,11 +94,11 @@ instances {
     w: 1.0
   }
   component_properties {
-    id: "light"
+    id: "trigger"
     properties {
-      id: "colour"
-      value: "1.0, 1.0, 0.0, 0.5"
-      type: PROPERTY_TYPE_VECTOR4
+      id: "script"
+      value: "kill_bridge"
+      type: PROPERTY_TYPE_HASH
     }
   }
   scale3 {
@@ -48,11 +108,11 @@ instances {
   }
 }
 instances {
-  id: "light1"
-  prototype: "/world/light.go"
+  id: "bridge"
+  prototype: "/world/bridge.go"
   position {
-    x: 1718.0
-    y: -617.0
+    x: 1728.0
+    y: -480.0
     z: 0.0
   }
   rotation {
@@ -60,94 +120,6 @@ instances {
     y: 0.0
     z: 0.0
     w: 1.0
-  }
-  component_properties {
-    id: "light"
-    properties {
-      id: "colour"
-      value: "1.0, 0.0, 0.0, 1.0"
-      type: PROPERTY_TYPE_VECTOR4
-    }
-  }
-  scale3 {
-    x: 0.3
-    y: 0.3
-    z: 0.3
-  }
-}
-instances {
-  id: "portal_part"
-  prototype: "/world/portal_part.go"
-  position {
-    x: 1766.0
-    y: -602.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
-instances {
-  id: "portal_part1"
-  prototype: "/world/portal_part.go"
-  position {
-    x: 2138.0
-    y: -602.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.70710677
-    w: 0.70710677
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
-instances {
-  id: "portal_part2"
-  prototype: "/world/portal_part.go"
-  position {
-    x: 1766.0
-    y: -230.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: -0.70710677
-    w: 0.70710677
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
-instances {
-  id: "portal_part3"
-  prototype: "/world/portal_part.go"
-  position {
-    x: 2138.0
-    y: -230.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 1.0
-    w: 6.123234E-17
   }
   scale3 {
     x: 1.0
@@ -161,6 +133,195 @@ collection_instances {
   position {
     x: 1952.0
     y: -416.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "portal_machine"
+  collection: "/world/portal_machine.collection"
+  position {
+    x: 1760.0
+    y: -672.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  instance_properties {
+    id: "go"
+    properties {
+      id: "portal_machine"
+      properties {
+        id: "part_position"
+        value: "1766.0, -602.0, 0.0"
+        type: PROPERTY_TYPE_VECTOR3
+      }
+      properties {
+        id: "part_angle_start"
+        value: "75.0"
+        type: PROPERTY_TYPE_NUMBER
+      }
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "portal_machine1"
+  collection: "/world/portal_machine.collection"
+  position {
+    x: 2057.0
+    y: -672.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  instance_properties {
+    id: "go"
+    properties {
+      id: "portal_machine"
+      properties {
+        id: "part_position"
+        value: "2138.0, -602.0, 0.0"
+        type: PROPERTY_TYPE_VECTOR3
+      }
+      properties {
+        id: "part_angle_start"
+        value: "90.0"
+        type: PROPERTY_TYPE_NUMBER
+      }
+      properties {
+        id: "part_angle_end"
+        value: "90.0"
+        type: PROPERTY_TYPE_NUMBER
+      }
+      properties {
+        id: "aligned"
+        value: "true"
+        type: PROPERTY_TYPE_BOOLEAN
+      }
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "portal_machine2"
+  collection: "/world/portal_machine.collection"
+  position {
+    x: 1632.0
+    y: -96.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  instance_properties {
+    id: "go"
+    properties {
+      id: "portal_machine"
+      properties {
+        id: "part_position"
+        value: "1766.0, -230.0, 0.0"
+        type: PROPERTY_TYPE_VECTOR3
+      }
+      properties {
+        id: "part_angle_start"
+        value: "-210.0"
+        type: PROPERTY_TYPE_NUMBER
+      }
+      properties {
+        id: "part_angle_end"
+        value: "-90.0"
+        type: PROPERTY_TYPE_NUMBER
+      }
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "portal_machine3"
+  collection: "/world/portal_machine.collection"
+  position {
+    x: 2240.0
+    y: -96.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  instance_properties {
+    id: "go"
+    properties {
+      id: "portal_machine"
+      properties {
+        id: "part_position"
+        value: "2138.0, -230.0, 0.0"
+        type: PROPERTY_TYPE_VECTOR3
+      }
+      properties {
+        id: "part_angle_start"
+        value: "180.0"
+        type: PROPERTY_TYPE_NUMBER
+      }
+      properties {
+        id: "part_angle_end"
+        value: "180.0"
+        type: PROPERTY_TYPE_NUMBER
+      }
+      properties {
+        id: "aligned"
+        value: "true"
+        type: PROPERTY_TYPE_BOOLEAN
+      }
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "switch"
+  collection: "/world/switch.collection"
+  position {
+    x: 1630.0
+    y: -414.0
     z: 0.0
   }
   rotation {

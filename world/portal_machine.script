@@ -1,0 +1,32 @@
+go.property("part_position", vmath.vector3(0))
+go.property("part_angle_start", 0)
+go.property("part_angle_end", 0)
+go.property("aligned", false)
+
+function init(self)
+	go.set_position(self.part_position, "portal_part")
+	if self.aligned then
+		sprite.play_flipbook("#sprite", "portal_machine_on")
+		msg.post("#co", hash("disable"))
+		msg.post("light_red", hash("disable"))
+	else
+		msg.post("light_green", hash("disable"))
+	end
+	go.set("portal_part", "euler.z", self.part_angle_start)
+end
+
+local function turn_on(self)
+	self.aligned = true
+	go.animate("portal_part", "euler.z", go.PLAYBACK_ONCE_FORWARD, self.part_angle_end, go.EASING_INOUTSINE, 2, 0, function()
+		sprite.play_flipbook("#sprite", "portal_machine_on")
+		msg.post("light_green", hash("enable"))
+		msg.post("light_red", hash("disable"))
+	end)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("pressed") then
+		msg.post("#co", hash("disable"))
+		turn_on(self)
+	end
+end

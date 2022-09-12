@@ -21,7 +21,7 @@ default_texture_min_filter = nearest
 default_texture_mag_filter = nearest
 
 [input]
-game_binding = /builtins/input/all.input_bindingc
+game_binding = /input/game.input_bindingc
 
 [display]
 update_frequency = 60

@@ -3,8 +3,8 @@ instances {
   id: "guy"
   prototype: "/world/guy.go"
   position {
-    x: 1440.0
-    y: -416.0
+    x: 160.0
+    y: 160.0
     z: 0.0
   }
   rotation {
@@ -131,8 +131,8 @@ collection_instances {
   id: "cube"
   collection: "/world/cube.collection"
   position {
-    x: 1952.0
-    y: -416.0
+    x: 0.0
+    y: 0.0
     z: 0.0
   }
   rotation {
@@ -322,6 +322,26 @@ collection_instances {
   position {
     x: 1630.0
     y: -414.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "cube_1"
+  collection: "/cube_1/cube_1.collection"
+  position {
+    x: 0.0
+    y: 0.0
     z: 0.0
   }
   rotation {

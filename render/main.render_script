@@ -1,6 +1,8 @@
-local cube_x, cube_y, cube_size = 26, 14, 5
-local cube_2_x, cube_2_y, cube_size = 26 + 5, 14, 5
-local cube_3_x, cube_3_y, cube_size = 26 + 10, 14, 5
+local cube_left_x, cube_left_y, cube_size = -5, 0, 5
+local cube_front_x, cube_front_y = 0, 0
+local cube_right_x, cube_right_y = 5, 0
+local cube_top_x, cube_top_y = 0, 5
+local cube_bottom_x, cube_bottom_y = 0, -5
 
 --
 -- projection that centers content with maintained aspect ratio and optional zoom
@@ -42,9 +44,11 @@ function init(self)
     self.model_pred = render.predicate({"model"})
     self.tilemap_pred = render.predicate({"tilemap"})
 
-    self.cube_1_pred = render.predicate({"cube_1"})
-    self.cube_2_pred = render.predicate({"cube_2"})
-    self.cube_3_pred = render.predicate({"cube_3"})
+    self.cube_front_pred = render.predicate({"cube_front"})
+    self.cube_left_pred = render.predicate({"cube_left"})
+    self.cube_right_pred = render.predicate({"cube_right"})
+    self.cube_top_pred = render.predicate({"cube_top"})
+    self.cube_bottom_pred = render.predicate({"cube_bottom"})
     
     self.clear_color = vmath.vector4(0, 0, 0, 0)
     self.clear_color.x = sys.get_config("render.clear_color_red", 0)
@@ -76,45 +80,60 @@ function init(self)
         width = render.get_width(),
         height = render.get_height(),
     }
-    self.cube_1_rt = render.render_target("cube_1_rt", {[render.BUFFER_COLOR_BIT] = color_params, [render.BUFFER_DEPTH_BIT] = depth_params})
-    self.cube_2_rt = render.render_target("cube_2_rt", {[render.BUFFER_COLOR_BIT] = color_params, [render.BUFFER_DEPTH_BIT] = depth_params})
-    self.cube_3_rt = render.render_target("cube_3_rt", {[render.BUFFER_COLOR_BIT] = color_params, [render.BUFFER_DEPTH_BIT] = depth_params})
+    self.cube_front_rt = render.render_target("cube_front_rt", {[render.BUFFER_COLOR_BIT] = color_params, [render.BUFFER_DEPTH_BIT] = depth_params})
+    self.cube_left_rt = render.render_target("cube_left_rt", {[render.BUFFER_COLOR_BIT] = color_params, [render.BUFFER_DEPTH_BIT] = depth_params})
+    self.cube_right_rt = render.render_target("cube_right_rt", {[render.BUFFER_COLOR_BIT] = color_params, [render.BUFFER_DEPTH_BIT] = depth_params})
+    self.cube_top_rt = render.render_target("cube_top_rt", {[render.BUFFER_COLOR_BIT] = color_params, [render.BUFFER_DEPTH_BIT] = depth_params})
+    self.cube_bottom_rt = render.render_target("cube_bottom_rt", {[render.BUFFER_COLOR_BIT] = color_params, [render.BUFFER_DEPTH_BIT] = depth_params})
 end
 
 function update(self)
     render.set_depth_mask(true)
     render.set_stencil_mask(0xff)
-    render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
 
-    --render.set_depth_mask(false)
     render.disable_state(render.STATE_DEPTH_TEST)
     --render.enable_state(render.STATE_DEPTH_TEST)
     render.disable_state(render.STATE_STENCIL_TEST)
+    
     render.enable_state(render.STATE_BLEND)
     render.set_blend_func(render.BLEND_SRC_ALPHA, render.BLEND_ONE_MINUS_SRC_ALPHA)
     render.disable_state(render.STATE_CULL_FACE)
 
     render.set_viewport(0, 0, render.get_window_width(), render.get_window_height())
 
-    local proj = vmath.matrix4_orthographic(cube_x * 64, (cube_x + cube_size) * 64, cube_y * 64, (cube_y + cube_size) * 64, -1, 1)
+    local proj = vmath.matrix4_orthographic(cube_left_x * 64, (cube_left_x + cube_size) * 64, cube_left_y * 64, (cube_left_y + cube_size) * 64, -1, 1)
     render.set_projection(proj)
     render.set_view(vmath.matrix4())
 
-    render.set_render_target(self.cube_1_rt)
+    render.set_render_target(self.cube_left_rt)
     render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
     render.draw(self.tilemap_pred)
     render.draw(self.tile_pred)
 
-    proj = vmath.matrix4_orthographic(cube_2_x * 64, (cube_2_x + cube_size) * 64, cube_2_y * 64, (cube_2_y + cube_size) * 64, -1, 1)
+    proj = vmath.matrix4_orthographic(cube_front_x * 64, (cube_front_x + cube_size) * 64, cube_front_y * 64, (cube_front_y + cube_size) * 64, -1, 1)
     render.set_projection(proj)
-    render.set_render_target(self.cube_2_rt)
+    render.set_render_target(self.cube_front_rt)
     render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
     render.draw(self.tilemap_pred)
     render.draw(self.tile_pred)
 
-    proj = vmath.matrix4_orthographic(cube_3_x * 64, (cube_3_x + cube_size) * 64, cube_3_y * 64, (cube_3_y + cube_size) * 64, -1, 1)
+    proj = vmath.matrix4_orthographic(cube_right_x * 64, (cube_right_x + cube_size) * 64, cube_right_y * 64, (cube_right_y + cube_size) * 64, -1, 1)
     render.set_projection(proj)
-    render.set_render_target(self.cube_3_rt)
+    render.set_render_target(self.cube_right_rt)
+    render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
+    render.draw(self.tilemap_pred)
+    render.draw(self.tile_pred)
+
+    proj = vmath.matrix4_orthographic(cube_top_x * 64, (cube_top_x + cube_size) * 64, cube_top_y * 64, (cube_top_y + cube_size) * 64, -1, 1)
+    render.set_projection(proj)
+    render.set_render_target(self.cube_top_rt)
+    render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
+    render.draw(self.tilemap_pred)
+    render.draw(self.tile_pred)
+
+    proj = vmath.matrix4_orthographic(cube_bottom_x * 64, (cube_bottom_x + cube_size) * 64, cube_bottom_y * 64, (cube_bottom_y + cube_size) * 64, -1, 1)
+    render.set_projection(proj)
+    render.set_render_target(self.cube_bottom_rt)
     render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
     render.draw(self.tilemap_pred)
     render.draw(self.tile_pred)
@@ -124,20 +143,28 @@ function update(self)
     render.set_view(self.view)
     render.set_projection(get_projection(self))
 
-    render.draw(self.tilemap_pred)
-    render.draw(self.tile_pred)
+    render.enable_state(render.STATE_DEPTH_TEST)
 
-    render.enable_texture(0, self.cube_3_rt, render.BUFFER_COLOR_BIT)
-    render.draw(self.cube_3_pred)
-    render.disable_texture(0, self.cube_3_rt)
-    render.enable_texture(0, self.cube_1_rt, render.BUFFER_COLOR_BIT)
-    render.draw(self.cube_1_pred)
-    render.disable_texture(0, self.cube_1_rt)
-    render.enable_texture(0, self.cube_2_rt, render.BUFFER_COLOR_BIT)
-    render.draw(self.cube_2_pred)
-    render.disable_texture(0, self.cube_2_rt)
+    render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
+    --render.draw(self.tilemap_pred)
+    --render.draw(self.tile_pred)
+    --render.draw_debug3d()
 
-
+    render.enable_texture(0, self.cube_front_rt, render.BUFFER_COLOR_BIT)
+    render.draw(self.cube_front_pred)
+    render.disable_texture(0, self.cube_front_rt)
+    render.enable_texture(0, self.cube_left_rt, render.BUFFER_COLOR_BIT)
+    render.draw(self.cube_left_pred)
+    render.disable_texture(0, self.cube_left_rt)
+    render.enable_texture(0, self.cube_right_rt, render.BUFFER_COLOR_BIT)
+    render.draw(self.cube_right_pred)
+    render.disable_texture(0, self.cube_right_rt)
+    render.enable_texture(0, self.cube_top_rt, render.BUFFER_COLOR_BIT)
+    render.draw(self.cube_top_pred)
+    render.disable_texture(0, self.cube_top_rt)
+    render.enable_texture(0, self.cube_bottom_rt, render.BUFFER_COLOR_BIT)
+    render.draw(self.cube_bottom_pred)
+    render.disable_texture(0, self.cube_bottom_rt)
     
     -- render GUI
     --
@@ -172,6 +199,6 @@ function on_message(self, message_id, message)
         self.far = message.far or 1
         self.projection_fn = fixed_fit_projection
     elseif message_id == hash("set_cube_position") then
-        cube_x, cube_y, cube_size = message.x, message.y, message.size
+        cube_left_x, cube_left_y, cube_size = message.x, message.y, message.size
     end
 end

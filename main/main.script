@@ -1,7 +1,8 @@
-local cam_follow = true
-local cam_follow_cube = false
-local cam_mouse = false
 local cam_target = vmath.vector3(0)
+
+local FOLLOW, CUBE, MOUSE = hash("follow"), hash("cube"), hash("mouse")
+
+local camera_mode = hash("follow")
 
 function init(self)
 	go.set("camera", "position.x", go.get_world_position("guy").x)
@@ -10,8 +11,10 @@ function init(self)
 	msg.post("camera", "acquire_camera_focus")
 	msg.post(".", "acquire_input_focus")
 	timer.delay(0.1, false, function()
-		cam_follow = false
-		cam_mouse = true
+		go.cancel_animations("camera", "position")
+		go.set("camera", "position.x", 0)
+		go.set("camera", "position.y", 0)
+		camera_mode = CUBE
 	end)
 end
 
@@ -30,13 +33,11 @@ function on_message(self, message_id, message, sender)
 			tilemap.set_tile("#homeworld_01", "ground", x, -7, 11)
 			tilemap.set_tile("#homeworld_01", "ground", x, -8, 2)
 		end
-	elseif message_id == hash("follow_cube") then
-		cam_follow_cube = true
 	end
 end
 
 function update(self, dt)
-	if cam_follow then
+	if camera_mode == FOLLOW then
 		local cam_pos = go.get_world_position("camera")
 		local guy_pos = go.get_world_position("guy")
 		local diff_x = math.abs(cam_pos.x - guy_pos.x)
@@ -45,7 +46,7 @@ function update(self, dt)
 		diff_y = (320 - diff_y) / 2048
 		go.animate("camera", "position.x", go.PLAYBACK_ONCE_FORWARD, go.get_world_position("guy").x, go.EASING_LINEAR, diff_x)
 		go.animate("camera", "position.y", go.PLAYBACK_ONCE_FORWARD, go.get_world_position("guy").y, go.EASING_INSINE, diff_y)
-	elseif cam_mouse then
+	elseif camera_mode == MOUSE then
 		local cam_pos = go.get_world_position("camera")
 		local guy_pos = go.get_world_position("guy") + cam_target
 		local diff_x = math.abs(cam_pos.x - guy_pos.x)
@@ -54,22 +55,59 @@ function update(self, dt)
 		diff_y = (320 - diff_y) / 2048
 		go.animate("camera", "position.x", go.PLAYBACK_ONCE_FORWARD, guy_pos.x, go.EASING_LINEAR, diff_x)
 		go.animate("camera", "position.y", go.PLAYBACK_ONCE_FORWARD, guy_pos.y, go.EASING_INSINE, diff_y)
-		--cam_target.x = cam_target.x 
-	elseif cam_follow_cube then
-		local pos_x = go.get_world_position("guy").x - 1664 - 480
-		pos_x = pos_x / 480
-		if not (math.abs(pos_x) > 1) then
-			go.set("camera", "euler.y", 45 * pos_x)
-			go.set("camera", "position.x", 1400 + (800 * (pos_x + 1) / 2))
-			go.set("camera", "position.z", 600 + ((1 - math.abs(pos_x)) * 300))
+	elseif camera_mode == CUBE then
+		local limit_x, limit_y = 0, 0
+		
+		local guy_pos = go.get_world_position("guy")
+		if guy_pos.x < limit_x then
+			guy_pos.x = guy_pos.x + 320
+			go.set_position(guy_pos, "guy")
+			go.cancel_animations("guy", "position.x")
+			msg.post("/cube_1/controller", hash("shift"), {dir = hash("left")})
+		elseif guy_pos.x > (limit_x + 320) then
+			guy_pos.x = guy_pos.x - 320
+			go.set_position(guy_pos, "guy")
+			go.cancel_animations("guy", "position.x")
+			msg.post("/cube_1/controller", hash("shift"), {dir = hash("right")})
 		end
+		if guy_pos.y < limit_y then
+			guy_pos.y = guy_pos.y + 320
+			go.set_position(guy_pos, "guy")
+			go.cancel_animations("guy", "position.y")
+			msg.post("/cube_1/controller", hash("shift"), {dir = hash("down")})
+		elseif guy_pos.y > (limit_y + 320) then
+			guy_pos.y = guy_pos.y - 320
+			go.set_position(guy_pos, "guy")
+			go.cancel_animations("guy", "position.y")
+			msg.post("/cube_1/controller", hash("shift"), {dir = hash("up")})
+		end
+		
+		local pos_x = (guy_pos.x - limit_x - 160) / 160
+		local pos_y = (guy_pos.y - limit_y - 160) / 160
+
+		local player_pos = vmath.normalize(vmath.vector3(-pos_x, -pos_y, 1))
+
+		local mod
+		local dist_x = 1 - math.abs(pos_x)
+		local dist_y = 1 - math.abs(pos_y)
+		if dist_x == dist_y then
+			mod = 0
+		elseif dist_x > dist_y then
+			mod = 15 * (1 - (dist_y / dist_x))
+		else
+			mod = -15 * (1 - (dist_x / dist_y))
+		end
+		local angle = (pos_x * pos_y) * math.rad(mod)
+		local rotation_adjust = vmath.quat_rotation_z(angle)
+
+		local rot_4 = vmath.quat_from_to(vmath.vector3(0, 0, 1), player_pos)
+		
+		go.set_rotation(rotation_adjust * rot_4, "cube/faces")
 	end
 end
 
 function on_input(self, action_id, action)
-	if cam_mouse and not action_id then
-		--cam_target.x = cam_target.x + action.dx
-		--cam_target.y = cam_target.y + action.dy
+	if not action_id and camera_mode == MOUSE then
 		cam_target = vmath.vector3(action.x - 480, action.y - 320, 0)
 	end
 end

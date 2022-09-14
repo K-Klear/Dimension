@@ -1,5 +1,5 @@
 name: "cube"
-tags: "cube_3"
+tags: "cube_left"
 vertex_program: "/builtins/materials/sprite.vp"
 fragment_program: "/builtins/materials/sprite.fp"
 vertex_space: VERTEX_SPACE_WORLD

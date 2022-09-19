@@ -1,29 +1,65 @@
 go.property("script", hash(""))
+go.property("disabled", false)
 
 trigger_fn = {}
 trigger_fn[hash("")] = function() end
-trigger_fn[hash("spawn_cube")] = function()
-	trigger_fn[hash("spawn_cube")] = function() end
-	--msg.post("guy", hash("stop"))
-	msg.post("main", hash("spawn_cube"))
-	timer.delay(0.1, false, function()
-		msg.post("/cube/controller", hash("spawn"))
-	end)
-	timer.delay(1.5, false, function()
-		msg.post("main", hash("set_tiles_for_cube"))
-		msg.post("@render:", hash("set_cube_position"), {x = 28, y = -9, size = 5})
-		msg.post("main", hash("follow_cube"))
-		go.delete()
+trigger_fn[hash("lock_front_door")] = function()
+	local scan_time = 6
+	msg.post("/door", hash("switch_mode"), {mode = hash("lock"), state = hash("closed")})
+
+	timer.delay(1, false, function()
+
+		msg.post("light_entry", hash("enable"))
+		msg.post("laser", hash("enable"))
+		msg.post("laser_2", hash("enable"))
+		
+		go.animate("laser", "position.y", go.PLAYBACK_ONCE_PINGPONG, 1216, go.EASING_INOUTSINE, scan_time)
+		go.animate("laser_2", "position.x", go.PLAYBACK_ONCE_PINGPONG, -832, go.EASING_INOUTSINE, scan_time)
+		go.animate("laser", "scale.y", go.PLAYBACK_ONCE_FORWARD, 3, go.EASING_LINEAR, 1)
+		go.animate("laser_2", "scale.y", go.PLAYBACK_ONCE_FORWARD, 3, go.EASING_LINEAR, 1)
+		timer.delay(scan_time - 1, false, function()
+			go.animate("laser", "scale.y", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_LINEAR, 1)
+			go.animate("laser_2", "scale.y", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_LINEAR, 1)
+		end)
+		go.animate("light_entry", "position.x", go.PLAYBACK_ONCE_PINGPONG, -832, go.EASING_INOUTSINE, scan_time)
+		go.animate("light_entry", "position.y", go.PLAYBACK_ONCE_PINGPONG, 1216, go.EASING_INOUTSINE, scan_time, 0, function()
+			msg.post("light_entry", hash("disable"))
+			msg.post("laser", hash("disable"))
+			msg.post("laser_2", hash("disable"))
+			msg.post("light_entry_green", hash("enable"))
+		end)
+		timer.delay(scan_time + 0.5, false, function()
+			msg.post("door_entry", hash("switch_mode"), {mode = hash("lock"), state = hash("open")})
+			msg.post("elevator/go", hash("open"))
+		end)
 	end)
 end
 trigger_fn[hash("kill_bridge")] = function()
 	msg.post("bridge2#co", hash("disable"))
-	go.animate("bridge2", "position.y", go.PLAYBACK_ONCE_FORWARD, -704, go.EASING_INSINE, 1)
+	go.animate("bridge2", "position.y", go.PLAYBACK_ONCE_FORWARD, -128, go.EASING_INSINE, 1)
 	go.delete()
+end
+trigger_fn[hash("teleport_to_cube_1")] = function()
+	local pos = go.get_world_position("/guy")
+	go.set("/guy", "position", pos + vmath.vector3(-320, 2560, 0))
+	msg.post("@render:", hash("setup_cube"), {left_x = -5, left_y = 40})
+	go.set("/trigger_from_cube_1#trigger", "disabled", false)
+end
+trigger_fn[hash("teleport_back_from_cube_1")] = function()
+	local pos = go.get_world_position("/guy")
+	go.set("/guy", "position", pos - vmath.vector3(-320, 2560, 0))
+	msg.post("@render:", hash("setup_cube"), {left_x = 0, left_y = 0})
+	go.set("/trigger_teleport_to_cube_1#trigger", "disabled", false)
+end
+trigger_fn[hash("follow_cube_1")] = function()
+	go.delete("/trigger_from_cube_1")
+	go.delete("/trigger_teleport_to_cube_1")
+	msg.post("/main", hash("camera_mode_cube"), {x = 0, y = 2560})
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("trigger_response") and message.enter then
+	if message_id == hash("trigger_response") and message.enter and not self.disabled then
+		self.disabled = true
 		trigger_fn[self.script]()
 	end
 end

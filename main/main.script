@@ -1,8 +1,46 @@
-local cam_target = vmath.vector3(0)
-
-local FOLLOW, CUBE, MOUSE = hash("follow"), hash("cube"), hash("mouse")
+local FOLLOW, CUBE, CINEMA = hash("follow"), hash("cube"), hash("cinema")
 
 local camera_mode = hash("follow")
+
+local object_list = {
+	"/elevator/door",
+	"/elevator/go",
+	"/elevator/light",
+	"/portal_machine/go",
+	"/portal_machine/light_green",
+	"/portal_machine/light_red",
+	"/portal_machine/portal_part",
+	"/portal_machine1/go",
+	"/portal_machine1/light_green",
+	"/portal_machine1/light_red",
+	"/portal_machine1/portal_part",
+	"/portal_machine2/go",
+	"/portal_machine2/light_green",
+	"/portal_machine2/light_red",
+	"/portal_machine2/portal_part",
+	"/portal_machine3/go",
+	"/portal_machine3/light_green",
+	"/portal_machine3/light_red",
+	"/portal_machine3/portal_part",
+	"/bridge",
+	"/bridge1",
+	"/bridge2",
+	"/bridge3",
+	"/bridge_dark",
+	"/lamp_wide/go",
+	"/lamp_wide/light_no_sprite",
+	"/switch/go",
+	"/switch/light_green",
+	"/switch/light_red",
+	"/switch_lab/go",
+	"/switch_lab/light_green",
+	"/switch_lab/light_red",
+	"/console",
+}
+local object_list_spriteless = {
+	"/screen_alignment/screen",
+	"/screen_alignment1/screen"
+}
 
 function init(self)
 	go.set("camera", "position.x", go.get_world_position("guy").x)
@@ -10,28 +48,103 @@ function init(self)
 	msg.post("@render:", "use_camera_projection")
 	msg.post("camera", "acquire_camera_focus")
 	msg.post(".", "acquire_input_focus")
+	--[[
 	timer.delay(0.1, false, function()
 		go.cancel_animations("camera", "position")
 		go.set("camera", "position.x", 0)
 		go.set("camera", "position.y", 0)
 		camera_mode = CUBE
 	end)
+	--]]
+	msg.post("lamp_wide/go", hash("disable"))
+	msg.post("lamp_wide/light_no_sprite", hash("disable"))
+	msg.post("laser", hash("disable"))
+	msg.post("laser_2", hash("disable"))
+	msg.post("light_entry_green", hash("disable"))
+	go.set("laser", "scale", vmath.vector3(64 * 3, 0, 1))
+	go.set("laser_2", "scale", vmath.vector3(64 * 2, 0, 1))
+	go.set(msg.url(nil, "laser", "sprite"), "tint", vmath.vector4(1, 0, 0, 1))
+	go.set(msg.url(nil, "laser_2", "sprite"), "tint", vmath.vector4(1, 0, 0, 1))
+	msg.post("light_entry", hash("disable"))
+	msg.post("bridge#co", hash("disable"))
+	go.set("bridge", "scale.x", 0)
 end
 
 local function get_cursor_pos(x, y)
 	return vmath.vector3(x, y, 0) * 0.4 * 2
 end
 
+local alignment_screens = {}
+local aligned_count = 2
+
+
+local limit_x, limit_y = 0, 0
+
 function on_message(self, message_id, message, sender)
 	if message_id == hash("spawn_cube") then
 
-	elseif message_id == hash("set_tiles_for_cube") then
-		for x = 29, 33 do
-			tilemap.set_tile("#homeworld_01", "ground", x, -4, 14)
-			tilemap.set_tile("#homeworld_01", "ground", x, -5, 13)
-			tilemap.set_tile("#homeworld_01", "ground", x, -6, 12)
-			tilemap.set_tile("#homeworld_01", "ground", x, -7, 11)
-			tilemap.set_tile("#homeworld_01", "ground", x, -8, 2)
+	elseif message_id == hash("setup_cube_arrival_tiles") then
+		for x = 1, 5 do
+			tilemap.set_tile("/tilemap#homeworld_01", "ground", x, 5, 15)
+			tilemap.set_tile("/tilemap#homeworld_01", "ground", x, 4, 14)
+			tilemap.set_tile("/tilemap#homeworld_01", "ground", x, 3, 13)
+			tilemap.set_tile("/tilemap#homeworld_01", "ground", x, 2, 2)
+			tilemap.set_tile("/tilemap#homeworld_01", "ground", x, 1, 1)
+		end
+	elseif message_id == hash("alignment_screen_init") then
+		table.insert(alignment_screens, sender)
+	elseif message_id == hash("portal_part_aligned") then
+		for key, val in ipairs(alignment_screens) do
+			msg.post(val, message.position)
+		end
+		aligned_count = aligned_count + 1
+		if aligned_count > 3 then
+			sprite.play_flipbook("/console#sprite", "console_ready")
+			go.set("/switch_lab/go#switch", "turned_on", false)
+			go.set("/switch_lab/go#switch", "script", hash("spawn_cube"))
+		end
+	elseif message_id == hash("alignment_check") then
+		for key, val in ipairs(alignment_screens) do
+			msg.post(val, hash("screen_on"))
+		end
+	elseif message_id == hash("camera_cube_arrival") then
+		camera_mode = CINEMA
+		go.animate("camera", "position.x", go.PLAYBACK_ONCE_FORWARD, -768, go.EASING_INSINE, 6, 1.5)
+		go.animate("camera", "position.y", go.PLAYBACK_ONCE_FORWARD, 128, go.EASING_INSINE, 6, 1.5)
+		go.animate("camera", "euler.y", go.PLAYBACK_ONCE_FORWARD, -45, go.EASING_INSINE, 6, 1.5)
+		timer.delay(4, false, function()
+			msg.post("/cube/controller", hash("spawn"))
+		end)
+		timer.delay(10, false, function()
+			go.animate("/bridge", "scale.x", go.PLAYBACK_ONCE_FORWARD, 1, go.EASING_INSINE, 2)
+		end)
+		timer.delay(12, false, function()
+			msg.post("/bridge#co", hash("enable"))
+			msg.post("/door_lab_2", hash("switch_mode"), {mode = hash("lock"), state = hash("open")})
+		end)
+	elseif message_id == hash("camera_mode_cube") then
+		limit_x, limit_y = message.x, message.y
+		camera_mode = CUBE
+		go.animate("camera", "position.x", go.PLAYBACK_ONCE_FORWARD, 480 - 320, go.EASING_OUTSINE, 2)
+		go.animate("camera", "position.y", go.PLAYBACK_ONCE_FORWARD, 320 - 160, go.EASING_OUTSINE, 2)
+		go.animate("camera", "euler.y", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTSINE, 2)
+		timer.delay(1.5, false, function()
+			msg.post("/cube/controller", hash("animate_z"))
+		end)
+		local fade_time = 20
+		local fade_distance = -2500
+		go.animate("tilemap", "position.z", go.PLAYBACK_ONCE_FORWARD, fade_distance, go.EASING_INSINE, fade_time)
+		go.animate("tilemap#homeworld_01", "tint", go.PLAYBACK_ONCE_FORWARD, vmath.vector4(0, 0, 0, 0), go.EASING_INSINE, fade_time)
+		for key, val in ipairs(object_list) do
+			go.animate(val, "position.z", go.PLAYBACK_ONCE_FORWARD, fade_distance, go.EASING_INSINE, fade_time)
+			go.animate(val.."#sprite", "tint", go.PLAYBACK_ONCE_FORWARD, vmath.vector4(0, 0, 0, 0), go.EASING_INSINE, fade_time, 0, function()
+				go.delete(val)
+			end)
+		end
+		for key, val in ipairs(object_list_spriteless) do
+			go.animate(val, "position.z", go.PLAYBACK_ONCE_FORWARD, fade_distance, go.EASING_INSINE, fade_time, 0, function()
+				go.delete(val)
+			end)
 		end
 	end
 end
@@ -46,18 +159,7 @@ function update(self, dt)
 		diff_y = (320 - diff_y) / 2048
 		go.animate("camera", "position.x", go.PLAYBACK_ONCE_FORWARD, go.get_world_position("guy").x, go.EASING_LINEAR, diff_x)
 		go.animate("camera", "position.y", go.PLAYBACK_ONCE_FORWARD, go.get_world_position("guy").y, go.EASING_INSINE, diff_y)
-	elseif camera_mode == MOUSE then
-		local cam_pos = go.get_world_position("camera")
-		local guy_pos = go.get_world_position("guy") + cam_target
-		local diff_x = math.abs(cam_pos.x - guy_pos.x)
-		diff_x = (480 - diff_x) / 256
-		local diff_y = math.abs(cam_pos.y - guy_pos.y)
-		diff_y = (320 - diff_y) / 2048
-		go.animate("camera", "position.x", go.PLAYBACK_ONCE_FORWARD, guy_pos.x, go.EASING_LINEAR, diff_x)
-		go.animate("camera", "position.y", go.PLAYBACK_ONCE_FORWARD, guy_pos.y, go.EASING_INSINE, diff_y)
 	elseif camera_mode == CUBE then
-		local limit_x, limit_y = 0, 0
-		
 		local guy_pos = go.get_world_position("guy")
 		if guy_pos.x < limit_x then
 			guy_pos.x = guy_pos.x + 320
@@ -103,11 +205,5 @@ function update(self, dt)
 		local rot_4 = vmath.quat_from_to(vmath.vector3(0, 0, 1), player_pos)
 		
 		go.set_rotation(rotation_adjust * rot_4, "cube/faces")
-	end
-end
-
-function on_input(self, action_id, action)
-	if not action_id and camera_mode == MOUSE then
-		cam_target = vmath.vector3(action.x - 480, action.y - 320, 0)
 	end
 end

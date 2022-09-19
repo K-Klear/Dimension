@@ -32,32 +32,27 @@ convex_hulls {
 }
 convex_hulls {
   index: 22
-  count: 0
-  collision_group: ""
-}
-convex_hulls {
-  index: 22
-  count: 0
-  collision_group: ""
-}
-convex_hulls {
-  index: 22
-  count: 0
-  collision_group: ""
-}
-convex_hulls {
-  index: 22
-  count: 0
-  collision_group: ""
-}
-convex_hulls {
-  index: 22
-  count: 0
-  collision_group: ""
-}
-convex_hulls {
-  index: 22
   count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 26
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 26
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 26
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 26
+  count: 0
   collision_group: ""
 }
 convex_hulls {
@@ -88,6 +83,11 @@ convex_hulls {
 convex_hulls {
   index: 46
   count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 50
+  count: 0
   collision_group: ""
 }
 convex_hulls {

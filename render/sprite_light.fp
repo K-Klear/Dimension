@@ -54,6 +54,10 @@ void main()
         
         frag_light_colour.w = 1.00;
     }
+    else
+    {
+        discard;
+    }
     
     gl_FragColor = frag_colour + frag_light_colour;
 }

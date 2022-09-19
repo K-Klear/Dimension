@@ -1,4 +1,6 @@
 go.property("colour", vmath.vector4(1, 1, 1, 1))
+go.property("dynamic", false)
+go.property("sprite", true)
 
 function init(self)
 	local scale = go.get_scale().x
@@ -6,5 +8,9 @@ function init(self)
 		go.set_scale(self.colour.w)
 	else
 		self.colour.w = scale
+	end
+	if self.sprite then
+		go.set("#sprite", "scale", vmath.vector3(self.colour.w * 64))
+		go.set("#sprite", "tint", self.colour)
 	end
 end

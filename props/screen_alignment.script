@@ -1,0 +1,51 @@
+local function turn_on()
+	go.set("#light_top_left", "tint", vmath.vector4(1, 0, 0, 1))
+	go.set("#light_top_right", "tint", vmath.vector4(0, 1, 0, 1))
+	go.set("#light_bottom_left", "tint", vmath.vector4(1, 0, 0, 1))
+	go.set("#light_bottom_right", "tint", vmath.vector4(0, 1, 0, 1))
+end
+
+function init(self)
+	local low_light = vmath.vector4(1, 1, 1, 0.25)
+	go.set("#light_top_left", "tint", low_light)
+	go.set("#light_top_right", "tint", low_light)
+	go.set("#light_bottom_left", "tint", low_light)
+	go.set("#light_bottom_right", "tint", low_light)
+	go.set("#light_top_left", "scale", vmath.vector3(2))
+	go.set("#light_top_right", "scale", vmath.vector3(2))
+	go.set("#light_bottom_left", "scale", vmath.vector3(2))
+	go.set("#light_bottom_right", "scale", vmath.vector3(2))
+	msg.post("/main", hash("alignment_screen_init"))
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("top_left") then
+		go.set("#light_top_left", "tint", vmath.vector4(0, 1, 0, 1))
+		sprite.play_flipbook("#top_left", "screen_alignment_on")
+	elseif message_id == hash("bottom_left") then
+		go.set("#light_bottom_left", "tint", vmath.vector4(0, 1, 0, 1))
+		sprite.play_flipbook("#bottom_left", "screen_alignment_on")
+	elseif message_id == hash("top_right") then
+		go.set("#light_top_right", "tint", vmath.vector4(0, 1, 0, 1))
+		sprite.play_flipbook("#top_right", "screen_alignment_on")
+	elseif message_id == hash("bottom_right") then
+		go.set("#light_bottom_right", "tint", vmath.vector4(0, 1, 0, 1))
+		sprite.play_flipbook("#bottom_right", "screen_alignment_on")
+	elseif message_id == hash("screen_on") then
+		local screen_delay = 1
+		go.set("#light_top_left", "tint", vmath.vector4(1, 0, 0, 1))
+		sprite.play_flipbook("#top_left", "screen_alignment_off")
+		timer.delay(screen_delay, false, function()
+			go.set("#light_top_right", "tint", vmath.vector4(0, 1, 0, 1))
+			sprite.play_flipbook("#top_right", "screen_alignment_on")
+			timer.delay(screen_delay, false, function()
+				go.set("#light_bottom_left", "tint", vmath.vector4(1, 0, 0, 1))
+				sprite.play_flipbook("#bottom_left", "screen_alignment_off")
+				timer.delay(screen_delay, false, function()
+					go.set("#light_bottom_right", "tint", vmath.vector4(0, 1, 0, 1))
+					sprite.play_flipbook("#bottom_right", "screen_alignment_on")
+				end)
+			end)
+		end)
+	end
+end

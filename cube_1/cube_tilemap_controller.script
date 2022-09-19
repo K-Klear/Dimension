@@ -12,12 +12,12 @@ function init(self)
 end
 
 local face_coords = {
-	[hash("front")] = function() return 160, 160 end,
-	[hash("left")] = function() return -160, 160 end,
-	[hash("right")] = function() return 480, 160 end,
-	[hash("top")] = function() return 160, 480 end,
-	[hash("bottom")] = function() return 160, -160 end,
-	[hash("far")] = function() return 800, 160 end
+	[hash("front")] = function() return 160, 160 + 2560 end,
+	[hash("left")] = function() return -160, 160 + 2560 end,
+	[hash("right")] = function() return 480, 160 + 2560 end,
+	[hash("top")] = function() return 160, 480 + 2560 end,
+	[hash("bottom")] = function() return 160, -160 + 2560 end,
+	[hash("far")] = function() return 800, 160 + 2560 end
 }
 
 local function move_face(self, face, new_pos)

@@ -11,13 +11,18 @@ local function show()
 end
 
 function init(self)
-	--hide()
-	--go.set("faces", "position.z", 640)
+	hide()
+	go.set("faces", "position.z", 1640)
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("spawn") then
 		show()
-		go.animate("faces", "position.z", go.PLAYBACK_ONCE_FORWARD, 160, go.EASING_OUTSINE, 2)
+		go.animate("faces", "position.z", go.PLAYBACK_ONCE_FORWARD, 160, go.EASING_OUTSINE, 8, 0, function()
+			msg.post("/main", hash("setup_cube_arrival_tiles"))
+			msg.post("@render:", hash("setup_cube"), {left_x = 0, left_y = 0})
+		end)
+	elseif message_id == hash("animate_z") then
+		go.animate("faces", "position.z", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTSINE, 3)
 	end
 end

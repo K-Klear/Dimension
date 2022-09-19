@@ -1,8 +1,11 @@
-local cube_left_x, cube_left_y, cube_size = -5, 0, 5
-local cube_front_x, cube_front_y = 0, 0
-local cube_right_x, cube_right_y = 5, 0
-local cube_top_x, cube_top_y = 0, 5
-local cube_bottom_x, cube_bottom_y = 0, -5
+local cube_size = 5
+local cube_left_x, cube_left_y = -5, 40
+local cube_front_x, cube_front_y = 0, 40
+local cube_right_x, cube_right_y = 5, 40
+local cube_top_x, cube_top_y = 0, 45
+local cube_bottom_x, cube_bottom_y = 0, -35
+
+local ambient_light = vmath.vector4(0.1)
 
 --
 -- projection that centers content with maintained aspect ratio and optional zoom
@@ -43,6 +46,8 @@ function init(self)
     self.particle_pred = render.predicate({"particle"})
     self.model_pred = render.predicate({"model"})
     self.tilemap_pred = render.predicate({"tilemap"})
+    self.light_pred = render.predicate({"light"})
+    self.quad_pred = render.predicate({"quad"})
 
     self.cube_front_pred = render.predicate({"cube_front"})
     self.cube_left_pred = render.predicate({"cube_left"})
@@ -85,6 +90,9 @@ function init(self)
     self.cube_right_rt = render.render_target("cube_right_rt", {[render.BUFFER_COLOR_BIT] = color_params, [render.BUFFER_DEPTH_BIT] = depth_params})
     self.cube_top_rt = render.render_target("cube_top_rt", {[render.BUFFER_COLOR_BIT] = color_params, [render.BUFFER_DEPTH_BIT] = depth_params})
     self.cube_bottom_rt = render.render_target("cube_bottom_rt", {[render.BUFFER_COLOR_BIT] = color_params, [render.BUFFER_DEPTH_BIT] = depth_params})
+
+    self.normal_rt = render.render_target("normal", {[render.BUFFER_COLOR_BIT] = color_params, [render.BUFFER_DEPTH_BIT] = depth_params})
+    self.light_rt = render.render_target("light", {[render.BUFFER_COLOR_BIT] = color_params, [render.BUFFER_DEPTH_BIT] = depth_params})
 end
 
 function update(self)
@@ -92,7 +100,6 @@ function update(self)
     render.set_stencil_mask(0xff)
 
     render.disable_state(render.STATE_DEPTH_TEST)
-    --render.enable_state(render.STATE_DEPTH_TEST)
     render.disable_state(render.STATE_STENCIL_TEST)
     
     render.enable_state(render.STATE_BLEND)
@@ -137,18 +144,16 @@ function update(self)
     render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
     render.draw(self.tilemap_pred)
     render.draw(self.tile_pred)
-    
-    render.set_render_target(render.RENDER_TARGET_DEFAULT)
 
     render.set_view(self.view)
     render.set_projection(get_projection(self))
-
     render.enable_state(render.STATE_DEPTH_TEST)
 
+    render.set_render_target(self.normal_rt)
     render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
-    --render.draw(self.tilemap_pred)
-    --render.draw(self.tile_pred)
-    --render.draw_debug3d()
+    render.draw(self.tilemap_pred)    -- disable this when only on cube
+    render.draw(self.tile_pred)
+    render.draw_debug3d()
 
     render.enable_texture(0, self.cube_front_rt, render.BUFFER_COLOR_BIT)
     render.draw(self.cube_front_pred)
@@ -165,12 +170,37 @@ function update(self)
     render.enable_texture(0, self.cube_bottom_rt, render.BUFFER_COLOR_BIT)
     render.draw(self.cube_bottom_pred)
     render.disable_texture(0, self.cube_bottom_rt)
-    
+
+    render.disable_state(render.STATE_DEPTH_TEST)
+    render.set_render_target(self.light_rt)
+    render.clear({[render.BUFFER_COLOR_BIT] = ambient_light, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
+    render.draw(self.light_pred)
+
+    render.set_render_target(render.RENDER_TARGET_DEFAULT)
+    render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
+
+    render.set_view(vmath.matrix4())
+    render.set_projection(vmath.matrix4())
+
+    render.enable_texture(0, self.normal_rt, render.BUFFER_COLOR_BIT)
+    render.enable_texture(1, self.light_rt, render.BUFFER_COLOR_BIT)
+    render.draw(self.quad_pred)
+    render.disable_texture(1, self.light_rt)
+    render.disable_texture(0, self.normal_rt)
+
     -- render GUI
     --
+    
     render.set_view(vmath.matrix4())
     render.set_projection(vmath.matrix4_orthographic(0, render.get_window_width(), 0, render.get_window_height(), -1, 1))
 
+    render.enable_texture(0, self.normal_rt, render.BUFFER_COLOR_BIT)
+    render.enable_texture(1, self.light_rt, render.BUFFER_COLOR_BIT)
+    --render.draw(self.quad_pred)
+    render.disable_texture(1, self.light_rt, render.BUFFER_COLOR_BIT)
+    render.disable_texture(0, self.normal_rt, render.BUFFER_COLOR_BIT)
+
+    
     render.enable_state(render.STATE_STENCIL_TEST)
     render.draw(self.gui_pred)
     render.draw(self.text_pred)
@@ -198,7 +228,11 @@ function on_message(self, message_id, message)
         self.near = message.near or -1
         self.far = message.far or 1
         self.projection_fn = fixed_fit_projection
-    elseif message_id == hash("set_cube_position") then
-        cube_left_x, cube_left_y, cube_size = message.x, message.y, message.size
+    elseif message_id == hash("setup_cube") then
+        cube_size = cube_size or message.cube_size
+        cube_left_x = message.left_x or cube_left_x
+        cube_left_y = message.left_y or cube_left_y
+    elseif message_id == hash("set_ambient_light") then
+        ambient_light = message.light
     end
 end

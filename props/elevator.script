@@ -1,0 +1,50 @@
+local open_time = 0.35
+local ride_time = 7.5
+
+go.property("light", 0.1)
+
+local update_fn = function() end
+
+function init(self)
+	msg.post("light", hash("disable"))
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("open") then
+		go.animate("door", "scale.y", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTSINE, open_time)
+		msg.post("light", hash("enable"))
+	elseif message_id == hash("close") then
+		go.animate("door", "scale.y", go.PLAYBACK_ONCE_FORWARD, 1, go.EASING_OUTSINE, open_time)
+		msg.post("light", hash("disable"))
+	elseif message_id == hash("pressed") then
+		msg.post("#co_trigger", hash("disable"))
+		msg.post("/guy", hash("stop"))
+		go.animate("/guy", "position", go.PLAYBACK_ONCE_FORWARD, go.get_world_position(), go.EASING_LINEAR, 0.5)
+		go.animate("/guy", "scale", go.PLAYBACK_ONCE_FORWARD, 0.8, go.EASING_LINEAR, 0.5)
+		timer.delay(0.3, false, function()
+			go.animate("door", "scale.y", go.PLAYBACK_ONCE_FORWARD, 1, go.EASING_OUTSINE, open_time)
+			msg.post("light", hash("disable"))
+		end)
+		timer.delay(1 + open_time, false, function(self)
+			go.animate(".", "position.y", go.PLAYBACK_ONCE_FORWARD, 160, go.EASING_INOUTSINE, ride_time)
+			go.animate("door", "position.y", go.PLAYBACK_ONCE_FORWARD, 185, go.EASING_INOUTSINE, ride_time)
+			go.animate("light", "position.y", go.PLAYBACK_ONCE_FORWARD, 160, go.EASING_INOUTSINE, ride_time)
+			go.animate("/guy", "position.y", go.PLAYBACK_ONCE_FORWARD, 160, go.EASING_INOUTSINE, ride_time)
+			go.animate("#", "light", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_INSINE, ride_time * 0.8)
+			update_fn = function(self)
+				msg.post("@render:", hash("set_ambient_light"), {light = vmath.vector4(self.light)})
+			end
+		end)
+		timer.delay(1.5 + open_time + ride_time, false, function()
+			go.animate("door", "scale.y", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTSINE, open_time)
+			msg.post("light", hash("enable"))
+			msg.post("/guy", hash("start"))
+			go.animate("/guy", "scale", go.PLAYBACK_ONCE_FORWARD, 1, go.EASING_LINEAR, 0.2)
+			update_fn = function() end
+		end)
+	end
+end
+
+function update(self, dt)
+	update_fn(self)
+end

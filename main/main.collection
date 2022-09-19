@@ -3,8 +3,8 @@ instances {
   id: "guy"
   prototype: "/world/guy.go"
   position {
-    x: 160.0
-    y: 160.0
+    x: -1761.0
+    y: 1122.0
     z: 0.0
   }
   rotation {
@@ -20,71 +20,39 @@ instances {
   }
 }
 instances {
-  id: "bridge1"
-  prototype: "/world/bridge.go"
-  position {
-    x: 2112.0
-    y: -160.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
-instances {
-  id: "bridge2"
-  prototype: "/world/bridge.go"
-  position {
-    x: 1984.0
-    y: -160.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
-instances {
-  id: "bridge3"
-  prototype: "/world/bridge.go"
-  position {
-    x: 1856.0
-    y: -160.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
-instances {
-  id: "trigger"
+  id: "trigger_lasers"
   prototype: "/world/trigger.go"
   position {
-    x: 1670.0
-    y: -97.0
+    x: -930.0
+    y: 1120.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  component_properties {
+    id: "trigger"
+    properties {
+      id: "script"
+      value: "lock_front_door"
+      type: PROPERTY_TYPE_HASH
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "trigger_quake"
+  prototype: "/world/trigger.go"
+  position {
+    x: 63.0
+    y: 480.0
     z: 0.0
   }
   rotation {
@@ -108,11 +76,435 @@ instances {
   }
 }
 instances {
-  id: "bridge"
-  prototype: "/world/bridge.go"
+  id: "trigger_teleport_to_cube_1"
+  prototype: "/world/trigger_tall.go"
   position {
-    x: 1728.0
-    y: -480.0
+    x: 241.0
+    y: 160.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  component_properties {
+    id: "trigger"
+    properties {
+      id: "script"
+      value: "teleport_to_cube_1"
+      type: PROPERTY_TYPE_HASH
+    }
+    properties {
+      id: "disabled"
+      value: "true"
+      type: PROPERTY_TYPE_BOOLEAN
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "trigger_from_cube_1"
+  prototype: "/world/trigger_tall.go"
+  position {
+    x: -273.0
+    y: 2745.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  component_properties {
+    id: "trigger"
+    properties {
+      id: "script"
+      value: "teleport_back_from_cube_1"
+      type: PROPERTY_TYPE_HASH
+    }
+    properties {
+      id: "disabled"
+      value: "true"
+      type: PROPERTY_TYPE_BOOLEAN
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "trigger_follow_cube"
+  prototype: "/world/trigger_tall.go"
+  position {
+    x: 170.0
+    y: 2745.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  component_properties {
+    id: "trigger"
+    properties {
+      id: "script"
+      value: "follow_cube_1"
+      type: PROPERTY_TYPE_HASH
+    }
+    properties {
+      id: "disabled"
+      value: "true"
+      type: PROPERTY_TYPE_BOOLEAN
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "bridge_dark"
+  prototype: "/props/bridge_dark.go"
+  position {
+    x: -512.0
+    y: 96.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "screen_cube"
+  prototype: "/props/screen_cube.go"
+  position {
+    x: -377.0
+    y: 264.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "door"
+  prototype: "/props/door.go"
+  position {
+    x: -1072.0
+    y: 1153.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "door_lab"
+  prototype: "/props/door.go"
+  position {
+    x: -592.0
+    y: 192.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  component_properties {
+    id: "door"
+    properties {
+      id: "mode"
+      value: "lock"
+      type: PROPERTY_TYPE_HASH
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "light_entry_green"
+  prototype: "/light/light.go"
+  position {
+    x: -924.0
+    y: 1186.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  component_properties {
+    id: "light"
+    properties {
+      id: "colour"
+      value: "0.0, 1.0, 0.0, 1.0"
+      type: PROPERTY_TYPE_VECTOR4
+    }
+  }
+  scale3 {
+    x: 0.6
+    y: 0.6
+    z: 0.6
+  }
+}
+instances {
+  id: "door_lab_2"
+  prototype: "/props/door.go"
+  position {
+    x: -145.0
+    y: 192.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  component_properties {
+    id: "door"
+    properties {
+      id: "mode"
+      value: "lock"
+      type: PROPERTY_TYPE_HASH
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "door_entry"
+  prototype: "/props/door.go"
+  position {
+    x: -816.0
+    y: 1153.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  component_properties {
+    id: "door"
+    properties {
+      id: "mode"
+      value: "lock"
+      type: PROPERTY_TYPE_HASH
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "bridge3"
+  prototype: "/props/bridge.go"
+  position {
+    x: 0.0
+    y: 416.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "laser_2"
+  prototype: "/light/laser.go"
+  position {
+    x: -1024.0
+    y: 1216.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: -0.70710677
+    w: 0.70710677
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "console"
+  prototype: "/props/console.go"
+  position {
+    x: -380.0
+    y: 211.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.5
+    y: 1.5
+    z: 1.0
+  }
+}
+instances {
+  id: "light_entry"
+  prototype: "/light/light.go"
+  position {
+    x: -1024.0
+    y: 1088.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  component_properties {
+    id: "light"
+    properties {
+      id: "colour"
+      value: "1.0, 0.0, 0.0, 1.0"
+      type: PROPERTY_TYPE_VECTOR4
+    }
+    properties {
+      id: "dynamic"
+      value: "true"
+      type: PROPERTY_TYPE_BOOLEAN
+    }
+  }
+  scale3 {
+    x: 0.5
+    y: 0.5
+    z: 0.5
+  }
+}
+instances {
+  id: "bridge1"
+  prototype: "/props/bridge.go"
+  position {
+    x: 256.0
+    y: 416.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "bridge2"
+  prototype: "/props/bridge.go"
+  position {
+    x: 128.0
+    y: 416.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "bridge"
+  prototype: "/props/bridge.go"
+  position {
+    x: -128.0
+    y: 96.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "laser"
+  prototype: "/light/laser.go"
+  position {
+    x: -1024.0
+    y: 1088.0
     z: 0.0
   }
   rotation {
@@ -131,9 +523,9 @@ collection_instances {
   id: "cube"
   collection: "/world/cube.collection"
   position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
+    x: 160.0
+    y: 160.0
+    z: -1000.0
   }
   rotation {
     x: 0.0
@@ -149,10 +541,10 @@ collection_instances {
 }
 collection_instances {
   id: "portal_machine"
-  collection: "/world/portal_machine.collection"
+  collection: "/props/portal_machine.collection"
   position {
-    x: 1760.0
-    y: -672.0
+    x: -93.0
+    y: -96.0
     z: 0.0
   }
   rotation {
@@ -167,13 +559,18 @@ collection_instances {
       id: "portal_machine"
       properties {
         id: "part_position"
-        value: "1766.0, -602.0, 0.0"
+        value: "-26.0, -26.0, 0.0"
         type: PROPERTY_TYPE_VECTOR3
       }
       properties {
         id: "part_angle_start"
         value: "75.0"
         type: PROPERTY_TYPE_NUMBER
+      }
+      properties {
+        id: "position"
+        value: "bottom_left"
+        type: PROPERTY_TYPE_HASH
       }
     }
   }
@@ -185,10 +582,10 @@ collection_instances {
 }
 collection_instances {
   id: "portal_machine1"
-  collection: "/world/portal_machine.collection"
+  collection: "/props/portal_machine.collection"
   position {
-    x: 2057.0
-    y: -672.0
+    x: 265.0
+    y: -96.0
     z: 0.0
   }
   rotation {
@@ -203,7 +600,7 @@ collection_instances {
       id: "portal_machine"
       properties {
         id: "part_position"
-        value: "2138.0, -602.0, 0.0"
+        value: "346.0, -26.0, 0.0"
         type: PROPERTY_TYPE_VECTOR3
       }
       properties {
@@ -231,10 +628,10 @@ collection_instances {
 }
 collection_instances {
   id: "portal_machine2"
-  collection: "/world/portal_machine.collection"
+  collection: "/props/portal_machine.collection"
   position {
-    x: 1632.0
-    y: -96.0
+    x: -160.0
+    y: 480.0
     z: 0.0
   }
   rotation {
@@ -249,7 +646,7 @@ collection_instances {
       id: "portal_machine"
       properties {
         id: "part_position"
-        value: "1766.0, -230.0, 0.0"
+        value: "-26.0, 346.0, 0.0"
         type: PROPERTY_TYPE_VECTOR3
       }
       properties {
@@ -262,6 +659,11 @@ collection_instances {
         value: "-90.0"
         type: PROPERTY_TYPE_NUMBER
       }
+      properties {
+        id: "position"
+        value: "top_left"
+        type: PROPERTY_TYPE_HASH
+      }
     }
   }
   scale3 {
@@ -272,10 +674,10 @@ collection_instances {
 }
 collection_instances {
   id: "portal_machine3"
-  collection: "/world/portal_machine.collection"
+  collection: "/props/portal_machine.collection"
   position {
-    x: 2240.0
-    y: -96.0
+    x: 448.0
+    y: 480.0
     z: 0.0
   }
   rotation {
@@ -290,7 +692,7 @@ collection_instances {
       id: "portal_machine"
       properties {
         id: "part_position"
-        value: "2138.0, -230.0, 0.0"
+        value: "346.0, 346.0, 0.0"
         type: PROPERTY_TYPE_VECTOR3
       }
       properties {
@@ -308,6 +710,11 @@ collection_instances {
         value: "true"
         type: PROPERTY_TYPE_BOOLEAN
       }
+      properties {
+        id: "position"
+        value: "top_right"
+        type: PROPERTY_TYPE_HASH
+      }
     }
   }
   scale3 {
@@ -318,10 +725,212 @@ collection_instances {
 }
 collection_instances {
   id: "switch"
-  collection: "/world/switch.collection"
+  collection: "/props/switch.collection"
   position {
-    x: 1630.0
-    y: -414.0
+    x: -642.0
+    y: 160.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  instance_properties {
+    id: "go"
+    properties {
+      id: "switch"
+      properties {
+        id: "script"
+        value: "lab_entry"
+        type: PROPERTY_TYPE_HASH
+      }
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "elevator"
+  collection: "/props/elevator.collection"
+  position {
+    x: -736.0
+    y: 1120.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "lamp"
+  collection: "/light/lamp.collection"
+  position {
+    x: -1898.0
+    y: 1211.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "lamp1"
+  collection: "/light/lamp.collection"
+  position {
+    x: -1636.0
+    y: 1211.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "lamp2"
+  collection: "/light/lamp.collection"
+  position {
+    x: -1388.0
+    y: 1211.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "lamp_angled"
+  collection: "/light/lamp_angled.collection"
+  position {
+    x: -1103.0
+    y: 1294.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "switch_lab"
+  collection: "/props/switch.collection"
+  position {
+    x: -222.0
+    y: 167.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  instance_properties {
+    id: "go"
+    properties {
+      id: "switch"
+      properties {
+        id: "script"
+        value: "check_alignment"
+        type: PROPERTY_TYPE_HASH
+      }
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "lamp_wide"
+  collection: "/light/lamp_wide.collection"
+  position {
+    x: -372.0
+    y: 320.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "screen_alignment"
+  collection: "/props/screen_alignment.collection"
+  position {
+    x: -250.0
+    y: 275.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "screen_alignment1"
+  collection: "/props/screen_alignment.collection"
+  position {
+    x: 480.0
+    y: 31.0
     z: 0.0
   }
   rotation {
@@ -341,7 +950,7 @@ collection_instances {
   collection: "/cube_1/cube_1.collection"
   position {
     x: 0.0
-    y: 0.0
+    y: 2560.0
     z: 0.0
   }
   rotation {
@@ -362,66 +971,6 @@ embedded_instances {
   data: "components {\n"
   "  id: \"main\"\n"
   "  component: \"/main/main.script\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "}\n"
-  "components {\n"
-  "  id: \"homeworld_01\"\n"
-  "  component: \"/main/homeworld_01.tilemap\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "}\n"
-  "embedded_components {\n"
-  "  id: \"factory\"\n"
-  "  type: \"factory\"\n"
-  "  data: \"prototype: \\\"/world/guy.go\\\"\\n"
-  "load_dynamically: false\\n"
-  "\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "}\n"
-  "embedded_components {\n"
-  "  id: \"collisionobject\"\n"
-  "  type: \"collisionobject\"\n"
-  "  data: \"collision_shape: \\\"/main/homeworld_01.tilemap\\\"\\n"
-  "type: COLLISION_OBJECT_TYPE_STATIC\\n"
-  "mass: 0.0\\n"
-  "friction: 0.1\\n"
-  "restitution: 0.5\\n"
-  "group: \\\"ladder, ground\\\"\\n"
-  "mask: \\\"player\\\"\\n"
-  "linear_damping: 0.0\\n"
-  "angular_damping: 0.0\\n"
-  "locked_rotation: false\\n"
-  "bullet: false\\n"
-  "\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"
@@ -480,6 +1029,112 @@ embedded_instances {
     x: 480.0
     y: 320.0
     z: 772.55
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "go"
+  data: "embedded_components {\n"
+  "  id: \"model\"\n"
+  "  type: \"model\"\n"
+  "  data: \"mesh: \\\"/builtins/assets/meshes/quad.dae\\\"\\n"
+  "material: \\\"/render/multiply_quad.material\\\"\\n"
+  "textures: \\\"/builtins/graphics/particle_blob.png\\\"\\n"
+  "textures: \\\"/builtins/graphics/particle_blob.png\\\"\\n"
+  "skeleton: \\\"\\\"\\n"
+  "animations: \\\"\\\"\\n"
+  "default_animation: \\\"\\\"\\n"
+  "name: \\\"unnamed\\\"\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 2.0
+    y: 2.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "tilemap"
+  data: "components {\n"
+  "  id: \"homeworld_01\"\n"
+  "  component: \"/main/homeworld_01.tilemap\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"collisionobject\"\n"
+  "  type: \"collisionobject\"\n"
+  "  data: \"collision_shape: \\\"/main/homeworld_01.tilemap\\\"\\n"
+  "type: COLLISION_OBJECT_TYPE_STATIC\\n"
+  "mass: 0.0\\n"
+  "friction: 0.1\\n"
+  "restitution: 0.5\\n"
+  "group: \\\"ladder, ground\\\"\\n"
+  "mask: \\\"player\\\"\\n"
+  "linear_damping: 0.0\\n"
+  "angular_damping: 0.0\\n"
+  "locked_rotation: false\\n"
+  "bullet: false\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
   }
   rotation {
     x: 0.0

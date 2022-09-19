@@ -2,6 +2,7 @@ go.property("part_position", vmath.vector3(0))
 go.property("part_angle_start", 0)
 go.property("part_angle_end", 0)
 go.property("aligned", false)
+go.property("position", hash("bottom_right"))
 
 function init(self)
 	go.set_position(self.part_position, "portal_part")
@@ -21,6 +22,7 @@ local function turn_on(self)
 		sprite.play_flipbook("#sprite", "portal_machine_on")
 		msg.post("light_green", hash("enable"))
 		msg.post("light_red", hash("disable"))
+		msg.post("/main", hash("portal_part_aligned"), {position = self.position})
 	end)
 end
 

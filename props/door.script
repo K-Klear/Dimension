@@ -1,0 +1,51 @@
+go.property("mode", hash("auto"))
+
+local AUTO = hash("auto")
+local LOCK = hash("lock")
+
+local open_time = 0.25
+
+function init(self)
+	if self.mode == LOCK then
+		msg.post("#co_trigger", hash("disable"))
+	end
+end
+
+local function open(self)
+	if not self.open then
+		self.open = true
+		msg.post("#co", hash("disable"))
+		go.animate(".", "scale.y", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_LINEAR, open_time)
+	end
+end
+
+local function close(self)
+	if self.open then
+		self.open = false
+		msg.post("#co", hash("enable"))
+		go.animate(".", "scale.y", go.PLAYBACK_ONCE_FORWARD, 1, go.EASING_LINEAR, open_time)
+	end
+end
+
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("switch_mode") then
+		self.mode = message.mode
+		if message.mode == AUTO then
+			msg.post("#co_trigger", hash("enable"))
+		elseif message.mode == LOCK then
+			msg.post("#co_trigger", hash("disable"))
+		end
+		if message.state == hash("open") then
+			open(self)
+		elseif message.state == hash("closed") then
+			close(self)
+		end
+	elseif self.mode == AUTO and message_id == hash("trigger_response") then
+		if message.enter then
+			open(self)
+		else
+			close(self)
+		end
+	end
+end

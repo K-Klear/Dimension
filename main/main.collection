@@ -3,8 +3,8 @@ instances {
   id: "guy"
   prototype: "/world/guy.go"
   position {
-    x: -1761.0
-    y: 1122.0
+    x: -668.0
+    y: 160.0
     z: 0.0
   }
   rotation {
@@ -525,7 +525,7 @@ collection_instances {
   position {
     x: 160.0
     y: 160.0
-    z: -1000.0
+    z: -160.0
   }
   rotation {
     x: 0.0
@@ -874,7 +874,7 @@ collection_instances {
       id: "switch"
       properties {
         id: "script"
-        value: "check_alignment"
+        value: "spawn_cube"
         type: PROPERTY_TYPE_HASH
       }
     }
@@ -1117,6 +1117,24 @@ embedded_instances {
   "angular_damping: 0.0\\n"
   "locked_rotation: false\\n"
   "bullet: false\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"spawn_tile\"\n"
+  "  type: \"factory\"\n"
+  "  data: \"prototype: \\\"/props/breakaway_tile.go\\\"\\n"
+  "load_dynamically: false\\n"
   "\"\n"
   "  position {\n"
   "    x: 0.0\n"

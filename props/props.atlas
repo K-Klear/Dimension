@@ -74,6 +74,10 @@ images {
   image: "/assets/images/screens/screen_cube_blank.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_OFF
 }
+images {
+  image: "/assets/images/props/breakaway_tile.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_OFF
+}
 animations {
   id: "rotating_cube"
   images {

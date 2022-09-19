@@ -1,3 +1,5 @@
+math.randomseed(os.time())
+
 local FOLLOW, CUBE, CINEMA = hash("follow"), hash("cube"), hash("cinema")
 
 local camera_mode = hash("follow")
@@ -81,15 +83,12 @@ local aligned_count = 2
 local limit_x, limit_y = 0, 0
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("spawn_cube") then
-
-	elseif message_id == hash("setup_cube_arrival_tiles") then
+	if message_id == hash("setup_cube_arrival_tiles") then
+		local tilemap_url = "/cube_1/go3#cube_1_left"
 		for x = 1, 5 do
-			tilemap.set_tile("/tilemap#homeworld_01", "ground", x, 5, 15)
-			tilemap.set_tile("/tilemap#homeworld_01", "ground", x, 4, 14)
-			tilemap.set_tile("/tilemap#homeworld_01", "ground", x, 3, 13)
-			tilemap.set_tile("/tilemap#homeworld_01", "ground", x, 2, 2)
-			tilemap.set_tile("/tilemap#homeworld_01", "ground", x, 1, 1)
+			for y = 1, 5 do
+				tilemap.set_tile("/tilemap#homeworld_01", "ground", x, y, tilemap.get_tile(tilemap_url, "ground", x, y))
+			end
 		end
 	elseif message_id == hash("alignment_screen_init") then
 		table.insert(alignment_screens, sender)
@@ -108,27 +107,37 @@ function on_message(self, message_id, message, sender)
 			msg.post(val, hash("screen_on"))
 		end
 	elseif message_id == hash("camera_cube_arrival") then
+		local function explode_tiles()
+			for x = 1, 5 do
+				for y = 1, 5 do
+					factory.create("/tilemap#spawn_tile", vmath.vector3(x * 64, y * 64, 0))
+					tilemap.set_tile("/tilemap#homeworld_01", "ground", x, y, 0)
+				end
+			end
+		end
+		
 		camera_mode = CINEMA
 		go.animate("camera", "position.x", go.PLAYBACK_ONCE_FORWARD, -768, go.EASING_INSINE, 6, 1.5)
 		go.animate("camera", "position.y", go.PLAYBACK_ONCE_FORWARD, 128, go.EASING_INSINE, 6, 1.5)
 		go.animate("camera", "euler.y", go.PLAYBACK_ONCE_FORWARD, -45, go.EASING_INSINE, 6, 1.5)
-		timer.delay(4, false, function()
+		timer.delay(5.65, false, explode_tiles)
+		timer.delay(6, false, function()
 			msg.post("/cube/controller", hash("spawn"))
 		end)
 		timer.delay(10, false, function()
 			go.animate("/bridge", "scale.x", go.PLAYBACK_ONCE_FORWARD, 1, go.EASING_INSINE, 2)
 		end)
-		timer.delay(12, false, function()
+		timer.delay(11, false, function()
 			msg.post("/bridge#co", hash("enable"))
 			msg.post("/door_lab_2", hash("switch_mode"), {mode = hash("lock"), state = hash("open")})
 		end)
 	elseif message_id == hash("camera_mode_cube") then
 		limit_x, limit_y = message.x, message.y
 		camera_mode = CUBE
-		go.animate("camera", "position.x", go.PLAYBACK_ONCE_FORWARD, 480 - 320, go.EASING_OUTSINE, 2)
-		go.animate("camera", "position.y", go.PLAYBACK_ONCE_FORWARD, 320 - 160, go.EASING_OUTSINE, 2)
-		go.animate("camera", "euler.y", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTSINE, 2)
-		timer.delay(1.5, false, function()
+		go.animate("camera", "position.x", go.PLAYBACK_ONCE_FORWARD, 480 - 320, go.EASING_INSINE, 3)
+		go.animate("camera", "position.y", go.PLAYBACK_ONCE_FORWARD, 320 - 160, go.EASING_INSINE, 3)
+		go.animate("camera", "euler.y", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_INSINE, 3)
+		timer.delay(3, false, function()
 			msg.post("/cube/controller", hash("animate_z"))
 		end)
 		local fade_time = 20

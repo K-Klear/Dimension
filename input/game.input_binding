@@ -34,6 +34,10 @@ key_trigger {
   input: KEY_E
   action: "use"
 }
+key_trigger {
+  input: KEY_SPACE
+  action: "use"
+}
 mouse_trigger {
   input: MOUSE_BUTTON_LEFT
   action: "click"

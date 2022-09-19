@@ -3,7 +3,7 @@ local cube_left_x, cube_left_y = -5, 40
 local cube_front_x, cube_front_y = 0, 40
 local cube_right_x, cube_right_y = 5, 40
 local cube_top_x, cube_top_y = 0, 45
-local cube_bottom_x, cube_bottom_y = 0, -35
+local cube_bottom_x, cube_bottom_y = 0, 35
 
 local ambient_light = vmath.vector4(0.1)
 

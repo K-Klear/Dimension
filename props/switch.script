@@ -8,7 +8,7 @@ local scripts = {
 		msg.post("/lamp_wide/go", hash("enable"))
 		msg.post("/lamp_wide/light_no_sprite", hash("enable"))
 		msg.post("@render:", hash("set_ambient_light"), {light = vmath.vector4(0.15)})
-		timer.delay(1, false, function()
+		timer.delay(0.5, false, function()
 			msg.post("/elevator/go", hash("close"))
 			sprite.play_flipbook("/console#sprite", "console_online")
 			sprite.play_flipbook("/screen_cube#sprite", "rotating_cube")
@@ -33,15 +33,6 @@ local scripts = {
 		go.set("/trigger_follow_cube#trigger", "disabled", false)
 		go.set("/trigger_from_cube_1#trigger", "disabled", false)
 		go.set("/trigger_teleport_to_cube_1#trigger", "disabled", false)
-		timer.delay(0.5, false, function()
-			--msg.post("/cube/controller", hash("spawn"))
-		end)
-		timer.delay(4.5, false, function()
-			--msg.post("/main#main", hash("set_tiles_for_cube"))
-			--msg.post("@render:", hash("set_cube_position"), {x = 0, y = 0, size = 5})
-			--msg.post("/main#main", hash("follow_cube"))
-
-		end)
 	end
 }
 

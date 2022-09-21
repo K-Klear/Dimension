@@ -36,6 +36,8 @@ embedded_instances {
   "    z: 0.0\n"
   "    w: 1.0\n"
   "  }\n"
+  "  property_decls {\n"
+  "  }\n"
   "}\n"
   "embedded_components {\n"
   "  id: \"co\"\n"
@@ -216,7 +218,7 @@ embedded_instances {
   position {
     x: 0.0
     y: 25.0
-    z: 2.0
+    z: 6.0
   }
   rotation {
     x: 0.0

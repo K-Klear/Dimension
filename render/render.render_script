@@ -1,18 +1,26 @@
-local cube_size = 5
-local cube_left_x, cube_left_y = 0, 40
-local cube_front_x, cube_front_y = 5, 40
-local cube_right_x, cube_right_y = 10, 40
-local cube_top_x, cube_top_y = 5, 45
-local cube_bottom_x, cube_bottom_y = 5, 35
-
+local proj_left, proj_front, proj_right, proj_top, proj_bottom
 local ambient_light = vmath.vector4(0.1)
+local draw_flatland = true
 
 local NORMAL_RT, LIGHT_RT
 local CUBE_FRONT_RT, CUBE_LEFT_RT, CUBE_RIGHT_RT, CUBE_TOP_RT, CUBE_BOTTOM_RT
 
---
--- projection that centers content with maintained aspect ratio and optional zoom
---
+local function setup_cube_sides(x, y, size)
+    proj_left = vmath.matrix4_orthographic(-size * 64, 0, y * 64, (y + size) * 64, -6, 1)
+    proj_bottom = vmath.matrix4_orthographic(0, size * 64, (y - size) * 64, y * 64, -6, 1)
+    proj_top = vmath.matrix4_orthographic(0, size * 64, (y + size) * 64, (y + 2 * size) * 64, -6, 1)
+    proj_right = vmath.matrix4_orthographic(size * 64, size * 128, y * 64, (y + size) * 64, -6, 1)
+    proj_front = vmath.matrix4_orthographic(0, size * 64, y * 64, (y + size) * 64, -6, 1)
+end
+
+local function setup_cube_sides_old(x, y, size)
+    proj_left = vmath.matrix4_orthographic(x * 64, (x + size) * 64, y * 64, (y + size) * 64, -6, 1)
+    proj_bottom = vmath.matrix4_orthographic(size * 64, size * 128, (y - size) * 64, y * 64, -6, 1)
+    proj_top = vmath.matrix4_orthographic(size * 64, size * 128, (y + size) * 64, (y + 2 * size) * 64, -6, 1)
+    proj_right = vmath.matrix4_orthographic(size * 128, size * 192, y * 64, (y + size) * 64, -6, 1)
+    proj_front = vmath.matrix4_orthographic(size * 64, size * 128, y * 64, (y + size) * 64, -6, 1)
+end
+
 local function fixed_projection(near, far, zoom)
     local projected_width = render.get_window_width() / (zoom or 1)
     local projected_height = render.get_window_height() / (zoom or 1)
@@ -20,9 +28,7 @@ local function fixed_projection(near, far, zoom)
     local yoffset = -(projected_height - render.get_height()) / 2
     return vmath.matrix4_orthographic(xoffset, xoffset + projected_width, yoffset, yoffset + projected_height, near, far)
 end
---
--- projection that centers and fits content with maintained aspect ratio
---
+
 local function fixed_fit_projection(near, far)
     local width = render.get_width()
     local height = render.get_height()
@@ -31,9 +37,7 @@ local function fixed_fit_projection(near, far)
     local zoom = math.min(window_width / width, window_height / height)
     return fixed_projection(near, far, zoom)
 end
---
--- projection that stretches content
---
+
 local function stretch_projection(near, far)
     return vmath.matrix4_orthographic(0, render.get_width(), 0, render.get_height(), near, far)
 end
@@ -91,7 +95,7 @@ function init(self)
     self.view = vmath.matrix4()
 
     self.near = -1
-    self.far = 1
+    self.far = 6
     self.projection_fn = stretch_projection
 
     create_render_targets(render.get_width(), render.get_height())
@@ -110,38 +114,32 @@ function update(self)
 
     render.set_viewport(0, 0, render.get_window_width(), render.get_window_height())
 
-    local proj = vmath.matrix4_orthographic(cube_left_x * 64, (cube_left_x + cube_size) * 64, cube_left_y * 64, (cube_left_y + cube_size) * 64, -1, 1)
-    render.set_projection(proj)
+    render.set_projection(proj_left)
     render.set_view(vmath.matrix4())
-
     render.set_render_target(CUBE_LEFT_RT)
     render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
     render.draw(self.tilemap_pred)
     render.draw(self.tile_pred)
 
-    proj = vmath.matrix4_orthographic(cube_front_x * 64, (cube_front_x + cube_size) * 64, cube_front_y * 64, (cube_front_y + cube_size) * 64, -1, 1)
-    render.set_projection(proj)
+    render.set_projection(proj_front)
     render.set_render_target(CUBE_FRONT_RT)
     render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
     render.draw(self.tilemap_pred)
     render.draw(self.tile_pred)
 
-    proj = vmath.matrix4_orthographic(cube_right_x * 64, (cube_right_x + cube_size) * 64, cube_right_y * 64, (cube_right_y + cube_size) * 64, -1, 1)
-    render.set_projection(proj)
+    render.set_projection(proj_right)
     render.set_render_target(CUBE_RIGHT_RT)
     render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
     render.draw(self.tilemap_pred)
     render.draw(self.tile_pred)
 
-    proj = vmath.matrix4_orthographic(cube_top_x * 64, (cube_top_x + cube_size) * 64, cube_top_y * 64, (cube_top_y + cube_size) * 64, -1, 1)
-    render.set_projection(proj)
+    render.set_projection(proj_top)
     render.set_render_target(CUBE_TOP_RT)
     render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
     render.draw(self.tilemap_pred)
     render.draw(self.tile_pred)
 
-    proj = vmath.matrix4_orthographic(cube_bottom_x * 64, (cube_bottom_x + cube_size) * 64, cube_bottom_y * 64, (cube_bottom_y + cube_size) * 64, -1, 1)
-    render.set_projection(proj)
+    render.set_projection(proj_bottom)
     render.set_render_target(CUBE_BOTTOM_RT)
     render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
     render.draw(self.tilemap_pred)
@@ -153,9 +151,11 @@ function update(self)
 
     render.set_render_target(NORMAL_RT)
     render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
-    render.draw(self.tilemap_pred)    -- disable this when only on cube
-    render.draw(self.tile_pred)
-    render.draw_debug3d()
+    if draw_flatland then
+        render.draw(self.tilemap_pred)
+        render.draw(self.tile_pred)
+        render.draw_debug3d()
+    end
 
     render.enable_texture(0, CUBE_FRONT_RT, render.BUFFER_COLOR_BIT)
     render.draw(self.cube_front_pred)
@@ -226,10 +226,15 @@ function on_message(self, message_id, message)
     elseif message_id == hash("resized") then
         create_render_targets(message.w, message.h)
     elseif message_id == hash("setup_cube") then
-        cube_size = cube_size or message.cube_size
-        cube_left_x = message.left_x or cube_left_x
-        cube_left_y = message.left_y or cube_left_y
+        setup_cube_sides(message.x, message.y, message.size)
+    elseif message_id == hash("setup_cube_intro") then
+        setup_cube_sides_old(message.x, message.y, message.size)
+    elseif message_id == hash("setup_cube_special") then
+        setup_cube_sides_old(-5, 40, 5)
+        proj_left = vmath.matrix4_orthographic(0, 320, 0, 320, -6, 1)
     elseif message_id == hash("set_ambient_light") then
         ambient_light = message.light
+    elseif message_id == hash("toggle_flatland") then
+        draw_flatland = message.enabled
     end
 end

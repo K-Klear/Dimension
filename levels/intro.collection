@@ -1,10 +1,10 @@
-name: "main"
+name: "intro"
 instances {
   id: "guy"
   prototype: "/world/guy.go"
   position {
-    x: -1333.0
-    y: 1120.0
+    x: -630.0
+    y: 167.0
     z: 0.0
   }
   rotation {
@@ -841,7 +841,7 @@ collection_instances {
       id: "switch"
       properties {
         id: "script"
-        value: "check_alignment"
+        value: "spawn_cube"
         type: PROPERTY_TYPE_HASH
       }
     }
@@ -914,7 +914,7 @@ collection_instances {
 }
 collection_instances {
   id: "cube_1"
-  collection: "/cube_1/cube_1.collection"
+  collection: "/cubes/1/cube_1.collection"
   position {
     x: 320.0
     y: 2560.0
@@ -937,7 +937,7 @@ embedded_instances {
   id: "main"
   data: "components {\n"
   "  id: \"main\"\n"
-  "  component: \"/main/main.script\"\n"
+  "  component: \"/levels/main.script\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"
@@ -952,48 +952,7 @@ embedded_instances {
   "  property_decls {\n"
   "  }\n"
   "}\n"
-  ""
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
-embedded_instances {
-  id: "camera"
-  children: "shaker"
-  data: ""
-  position {
-    x: 480.0
-    y: 320.0
-    z: 772.55
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
-embedded_instances {
-  id: "go"
-  data: "embedded_components {\n"
+  "embedded_components {\n"
   "  id: \"model\"\n"
   "  type: \"model\"\n"
   "  data: \"mesh: \\\"/builtins/assets/meshes/quad.dae\\\"\\n"
@@ -1036,10 +995,31 @@ embedded_instances {
   }
 }
 embedded_instances {
+  id: "camera"
+  children: "shaker"
+  data: ""
+  position {
+    x: 480.0
+    y: 320.0
+    z: 772.55
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
   id: "tilemap"
   data: "components {\n"
   "  id: \"homeworld_01\"\n"
-  "  component: \"/main/homeworld_01.tilemap\"\n"
+  "  component: \"/levels/homeworld_01.tilemap\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"
@@ -1057,7 +1037,7 @@ embedded_instances {
   "embedded_components {\n"
   "  id: \"collisionobject\"\n"
   "  type: \"collisionobject\"\n"
-  "  data: \"collision_shape: \\\"/main/homeworld_01.tilemap\\\"\\n"
+  "  data: \"collision_shape: \\\"/levels/homeworld_01.tilemap\\\"\\n"
   "type: COLLISION_OBJECT_TYPE_STATIC\\n"
   "mass: 0.0\\n"
   "friction: 0.1\\n"

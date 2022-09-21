@@ -1,0 +1,84 @@
+go.property("cube_size", 5)
+go.property("offset_x", 0)
+go.property("offset_y", 0)
+
+local cube_size
+
+function init(self)
+	self.faces = {
+		[go.get_id("front")] = hash("front"),
+		[go.get_id("left")] = hash("left"),
+		[go.get_id("right")] = hash("right"),
+		[go.get_id("far")] = hash("far"),
+		[go.get_id("top")] = hash("top"),
+		[go.get_id("bottom")] = hash("bottom")
+	}
+
+	cube_size = self.cube_size * 32
+end
+
+local face_coords = {
+	[hash("front")] = function(self) return cube_size + self.offset_x, cube_size + self.offset_y end,
+	[hash("left")] = function(self) return -cube_size + self.offset_x, cube_size + self.offset_y end,
+	[hash("right")] = function(self) return 3 * cube_size + self.offset_x, cube_size + self.offset_y end,
+	[hash("top")] = function(self) return cube_size + self.offset_x, 3 * cube_size + self.offset_y end,
+	[hash("bottom")] = function(self) return cube_size + self.offset_x, -cube_size + self.offset_y end,
+	[hash("far")] = function(self) return 5 * cube_size + self.offset_x, cube_size + self.offset_y end
+}
+
+local function move_face(self, face, new_pos)
+	local x, y = face_coords[new_pos](self)
+	go.set(face, "position.x", x)
+	go.set(face, "position.y", y)
+	self.faces[face] = new_pos
+end
+
+local function rotate_face(self, face, rot)
+	go.set(face, "euler.z", go.get(face, "euler.z") + rot)
+end
+
+local shift = {}
+shift[hash("left")] = {
+	[hash("front")] = function(self, face) move_face(self, face, hash("right")) end,
+	[hash("left")] = function(self, face) move_face(self, face, hash("front")) end,
+	[hash("right")] = function(self, face) move_face(self, face, hash("far")) end,
+	[hash("far")] = function(self, face) move_face(self, face, hash("left")) end,
+	[hash("top")] = function(self, face) rotate_face(self, face, 90) end,
+	[hash("bottom")] = function(self, face) rotate_face(self, face, -90) end,
+}
+shift[hash("right")] = {
+	[hash("front")] = function(self, face) move_face(self, face, hash("left")) end,
+	[hash("left")] = function(self, face) move_face(self, face, hash("far")) end,
+	[hash("right")] = function(self, face) move_face(self, face, hash("front")) end,
+	[hash("far")] = function(self, face) move_face(self, face, hash("right")) end,
+	[hash("top")] = function(self, face) rotate_face(self, face, -90) end,
+	[hash("bottom")] = function(self, face) rotate_face(self, face, 90) end,
+}
+shift[hash("up")] = {
+	[hash("front")] = function(self, face) move_face(self, face, hash("bottom")) end,
+	[hash("left")] = function(self, face) rotate_face(self, face, -90) end,
+	[hash("right")] = function(self, face) rotate_face(self, face, 90) end,
+	[hash("far")] = function(self, face) move_face(self, face, hash("top")); rotate_face(self, face, 180) end,
+	[hash("top")] = function(self, face) move_face(self, face, hash("front")) end,
+	[hash("bottom")] = function(self, face) move_face(self, face, hash("far")); rotate_face(self, face, 180) end,
+}
+shift[hash("down")] = {
+	[hash("front")] = function(self, face) move_face(self, face, hash("top")) end,
+	[hash("left")] = function(self, face) rotate_face(self, face, 90) end,
+	[hash("right")] = function(self, face) rotate_face(self, face, -90) end,
+	[hash("far")] = function(self, face) move_face(self, face, hash("bottom")); rotate_face(self, face, 180) end,
+	[hash("top")] = function(self, face) move_face(self, face, hash("far")); rotate_face(self, face, 180) end,
+	[hash("bottom")] = function(self, face) move_face(self, face, hash("front")) end,
+}
+
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("shift") then
+		print(message.dir)
+		if shift[message.dir] then
+			for key, val in pairs(self.faces) do
+				shift[message.dir][val](self, key)
+			end
+		end
+	end
+end

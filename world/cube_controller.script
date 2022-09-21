@@ -1,31 +1,21 @@
-local function hide()
-	msg.post("front", hash("disable"))
-	msg.post("left", hash("disable"))
-	msg.post("right", hash("disable"))
-	msg.post("bottom", hash("disable"))
-	msg.post("top", hash("disable"))
-end
-
-local function show()
-	msg.post("front", hash("enable"))
-	msg.post("left", hash("enable"))
-	msg.post("right", hash("enable"))
-	msg.post("bottom", hash("enable"))
-	msg.post("top", hash("enable"))
-end
-
-function init(self)
-	hide()
-end
-
 function on_message(self, message_id, message, sender)
 	if message_id == hash("spawn") then
-		show()
+		msg.post("front", hash("enable"))
+		msg.post("left", hash("enable"))
+		msg.post("right", hash("enable"))
+		msg.post("bottom", hash("enable"))
+		msg.post("top", hash("enable"))
 		go.animate("faces", "position.z", go.PLAYBACK_ONCE_FORWARD, 160, go.EASING_OUTSINE, 2, 0, function()
 			msg.post("/main", hash("setup_cube_arrival_tiles"))
-			msg.post("@render:", hash("setup_cube"), {left_x = 0, left_y = 0})
+			msg.post("@render:", hash("setup_cube_special"))
 		end)
 	elseif message_id == hash("animate_z") then
 		go.animate("faces", "position.z", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTSINE, 3)
+	elseif message_id == hash("hide") then
+		msg.post("front", hash("disable"))
+		msg.post("left", hash("disable"))
+		msg.post("right", hash("disable"))
+		msg.post("bottom", hash("disable"))
+		msg.post("top", hash("disable"))
 	end
 end

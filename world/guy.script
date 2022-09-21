@@ -190,11 +190,16 @@ end
 function on_message(self, message_id, message, sender)
 	if message_id == hash("collision_response") then
 		if message.other_group == hash("ladder") then
-			--local x_coord = (current_position.x / 64) % 1
-			--if math.abs(x_coord - 0.5) < 0.1 then
-			--	touching_ladder = true
-			--end
 			touching_ladder = true
+		elseif message.other_group == hash("exit") then
+			if vmath.length_sqr(current_position, message.position) < 7700000 then
+				play_anim(message.anim or "stand")
+				update_fn = function() end
+				timer.delay(1, false, function()
+					local url = msg.url("bootstrap", "/loader", "loader")
+					msg.post(url, hash("restart"))
+				end)
+			end
 		end
 	elseif message_id == hash("trigger_response") then
 		if message.other_group == hash("light_source") then
@@ -233,6 +238,8 @@ function on_message(self, message_id, message, sender)
 	elseif message_id == hash("screen_resized") then
 		half_screen_w = message.w * 0.5
 		half_screen_h = message.h * 0.5
+	elseif message_id == hash("move_bitch") then
+		go.set_position(message.pos)
 	end
 end
 

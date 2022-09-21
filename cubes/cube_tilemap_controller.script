@@ -2,6 +2,8 @@ go.property("cube_size", 5)
 go.property("offset_x", 0)
 go.property("offset_y", 0)
 
+local cube_size
+
 function init(self)
 	self.faces = {
 		[go.get_id("front")] = hash("front"),
@@ -11,15 +13,32 @@ function init(self)
 		[go.get_id("top")] = hash("top"),
 		[go.get_id("bottom")] = hash("bottom")
 	}
+
+	cube_size = self.cube_size * 32
+
+	go.set_position(vmath.vector3(-cube_size, cube_size, 0), "left")
+	go.set_position(vmath.vector3(-cube_size, -cube_size, 0), "left_inside")
+	go.set_position(vmath.vector3(cube_size * 3, cube_size, 0), "right")
+	go.set_position(vmath.vector3(-cube_size, -cube_size, 0), "right_inside")
+
+	go.set_position(vmath.vector3(cube_size, cube_size, 0), "front")
+	go.set_position(vmath.vector3(-cube_size, -cube_size, 0), "front_inside")
+	go.set_position(vmath.vector3(5 * cube_size, cube_size, 0), "far")
+	go.set_position(vmath.vector3(-cube_size, -cube_size, 0), "far_inside")
+	go.set_position(vmath.vector3(cube_size, cube_size * 3, 0), "top")
+	go.set_position(vmath.vector3(-cube_size, -cube_size, 0), "top_inside")
+	go.set_position(vmath.vector3(cube_size, -cube_size, 0), "bottom")
+	go.set_position(vmath.vector3(-cube_size, -cube_size, 0), "bottom_inside")
+
 end
 
 local face_coords = {
-	[hash("front")] = function(self) return 160 + self.offset_x, 160 + self.offset_y end,
-	[hash("left")] = function(self) return -160 + self.offset_x, 160 + self.offset_y end,
-	[hash("right")] = function(self) return 480 + self.offset_x, 160 + self.offset_y end,
-	[hash("top")] = function(self) return 160 + self.offset_x, 480 + self.offset_y end,
-	[hash("bottom")] = function(self) return 160 + self.offset_x, -160 + self.offset_y end,
-	[hash("far")] = function(self) return 800 + self.offset_x, 160 + self.offset_y end
+	[hash("front")] = function(self) return cube_size + self.offset_x, cube_size + self.offset_y end,
+	[hash("left")] = function(self) return -cube_size + self.offset_x, cube_size + self.offset_y end,
+	[hash("right")] = function(self) return 3 * cube_size + self.offset_x, cube_size + self.offset_y end,
+	[hash("top")] = function(self) return cube_size + self.offset_x, 3 * cube_size + self.offset_y end,
+	[hash("bottom")] = function(self) return cube_size + self.offset_x, -cube_size + self.offset_y end,
+	[hash("far")] = function(self) return 5 * cube_size + self.offset_x, cube_size + self.offset_y end
 }
 
 local function move_face(self, face, new_pos)
@@ -70,6 +89,7 @@ shift[hash("down")] = {
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("shift") then
+		print(message.dir)
 		if shift[message.dir] then
 			for key, val in pairs(self.faces) do
 				shift[message.dir][val](self, key)

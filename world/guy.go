@@ -24,7 +24,7 @@ embedded_components {
   position {
     x: 0.0
     y: 0.0
-    z: 1.0
+    z: 5.0
   }
   rotation {
     x: 0.0
@@ -46,6 +46,7 @@ embedded_components {
   "mask: \"ladder\"\n"
   "mask: \"trigger\"\n"
   "mask: \"button\"\n"
+  "mask: \"exit\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_BOX\n"

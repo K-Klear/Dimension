@@ -1,0 +1,20 @@
+local current_proxy = "#intro_proxy"
+
+math.randomseed(os.time())
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	current_proxy = "#level_2_proxy"
+	msg.post(current_proxy, hash("load"))
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("proxy_loaded") then
+		msg.post(sender, hash("init"))
+		msg.post(sender, hash("enable"))
+	elseif message_id == hash("restart") then
+		msg.post(current_proxy, hash("unload"))
+	elseif message_id == hash("proxy_unloaded") then
+		msg.post(current_proxy, hash("load"))
+	end
+end

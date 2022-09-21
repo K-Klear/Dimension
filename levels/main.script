@@ -1,7 +1,7 @@
-math.randomseed(os.time())
+go.property("level", hash("intro"))
 
 local FOLLOW, CUBE, CINEMA, FOLLOW_ENTER_CUBE_1 = hash("follow"), hash("cube"), hash("cinema"), hash("follow_enter_cube_1")
-local camera_mode = FOLLOW
+local camera_mode
 
 local object_list = {
 	"/elevator/door",
@@ -61,27 +61,44 @@ local function window_callback(self, event, data)
 	end
 end
 
+local limit_x, limit_y, cube_size = 0, 0, 5 * 64
+
 function init(self)
 	window.set_listener(window_callback)
-	go.set("camera", "position.x", go.get_world_position("guy").x)
-	go.set("camera", "position.y", go.get_world_position("guy").y)
+	if self.level == hash("intro") then
+		msg.post("/cube/controller", hash("hide"))
+		camera_mode = FOLLOW
+		msg.post("lamp_wide/go", hash("disable"))
+		msg.post("lamp_wide/light_no_sprite", hash("disable"))
+		msg.post("laser", hash("disable"))
+		msg.post("laser_2", hash("disable"))
+		msg.post("light_entry_green", hash("disable"))
+		go.set("laser", "scale", vmath.vector3(64 * 3, 0, 1))
+		go.set("laser_2", "scale", vmath.vector3(64 * 2, 0, 1))
+		go.set(msg.url(nil, "laser", "sprite"), "tint", vmath.vector4(1, 0, 0, 1))
+		go.set(msg.url(nil, "laser_2", "sprite"), "tint", vmath.vector4(1, 0, 0, 1))
+		msg.post("light_entry", hash("disable"))
+		msg.post("bridge#co", hash("disable"))
+		go.set("bridge", "scale.x", 0)
+		msg.post("@render:", hash("setup_cube_intro"), {x = 0, y = 40, size = 5})
+		go.set("camera", "position.x", go.get_world_position("guy").x)
+		go.set("camera", "position.y", go.get_world_position("guy").y)
+		limit_x, limit_y = 320, 2560
+	else
+		msg.post("@render:", hash("set_ambient_light"), {light = vmath.vector4(0.5)})
+		cube_size = go.get("/cube_1/controller#cube_tilemap_controller", "cube_size")
+		local x_offset = go.get("/cube_1/controller", "position")
+		
+		limit_x, limit_y = 0, 0
+		msg.post("@render:", hash("toggle_flatland"), {enabled = false})
+		--msg.post("/cube/controller", hash("hide"))
+		msg.post("@render:", hash("setup_cube"), {x = 160, y = 0, size = cube_size})
+		cube_size = cube_size * 64
+		camera_mode = CUBE
+	end
 	msg.post("@render:", "use_camera_projection")
 	msg.post("/shaker#camera", "acquire_camera_focus")
 	msg.post(".", "acquire_input_focus")
-	msg.post("lamp_wide/go", hash("disable"))
-	msg.post("lamp_wide/light_no_sprite", hash("disable"))
-	msg.post("laser", hash("disable"))
-	msg.post("laser_2", hash("disable"))
-	msg.post("light_entry_green", hash("disable"))
-	go.set("laser", "scale", vmath.vector3(64 * 3, 0, 1))
-	go.set("laser_2", "scale", vmath.vector3(64 * 2, 0, 1))
-	go.set(msg.url(nil, "laser", "sprite"), "tint", vmath.vector4(1, 0, 0, 1))
-	go.set(msg.url(nil, "laser_2", "sprite"), "tint", vmath.vector4(1, 0, 0, 1))
-	msg.post("light_entry", hash("disable"))
-	msg.post("bridge#co", hash("disable"))
-	go.set("bridge", "scale.x", 0)
-	go.set("/cube_1/controller#cube_tilemap_controller", "offset_x", 320)
-	go.set("/cube_1/controller#cube_tilemap_controller", "offset_y", 2560)
 end
 
 local function get_cursor_pos(x, y)
@@ -91,8 +108,6 @@ end
 local alignment_screens = {}
 local aligned_count = 2
 
-
-local limit_x, limit_y = 0, 0
 
 local function shake_camera(duration, max_magnitude, mag_increase, direction)
 	local sign = 1
@@ -118,7 +133,7 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("setup_cube_arrival_tiles") then
-		local tilemap_url = "/cube_1/go3#cube_1_left"
+		local tilemap_url = "/cube_1/left_inside#cube_1_left"
 		for x = 1, 5 do
 			for y = 1, 5 do
 				tilemap.set_tile("/tilemap#homeworld_01", "ground", x, y, tilemap.get_tile(tilemap_url, "ground", x, y))
@@ -175,7 +190,7 @@ function on_message(self, message_id, message, sender)
 			msg.post("@render:", hash("set_ambient_light"), {light = vmath.vector4(0.05)})
 		end)
 		timer.delay(7.5, false, function()
-			go.animate("/bridge", "scale.x", go.PLAYBACK_ONCE_FORWARD, 1, go.EASING_INSINE, 2)
+			go.animate("/bridge", "scale.x", go.PLAYBACK_ONCE_FORWARD, 0.99, go.EASING_INSINE, 2)
 			sound.play("/sound#bridge_extend_longer")
 		end)
 		timer.delay(8.5, false, function()
@@ -185,7 +200,6 @@ function on_message(self, message_id, message, sender)
 		end)
 	elseif message_id == hash("camera_mode_cube") then
 		shake_camera(0.5, 4, 0.4, "position.y")
-		limit_x, limit_y = message.x, message.y
 		camera_mode = CUBE
 		go.animate("camera", "position.x", go.PLAYBACK_ONCE_FORWARD, 160, go.EASING_INSINE, 3)
 		go.animate("camera", "position.y", go.PLAYBACK_ONCE_FORWARD, 160, go.EASING_INSINE, 3)
@@ -227,31 +241,27 @@ function update(self, dt)
 	elseif camera_mode == CUBE then
 		local guy_pos = go.get_world_position("guy")
 		if guy_pos.x < limit_x then
-			guy_pos.x = guy_pos.x + 320
-			go.set_position(guy_pos, "guy")
-			go.cancel_animations("guy", "position.x")
+			guy_pos.x = guy_pos.x + cube_size
+			msg.post("guy", hash("move_bitch"), {pos = guy_pos})
 			msg.post("/cube_1/controller", hash("shift"), {dir = hash("left")})
-		elseif guy_pos.x > (limit_x + 320) then
-			guy_pos.x = guy_pos.x - 320
-			go.set_position(guy_pos, "guy")
-			go.cancel_animations("guy", "position.x")
+		elseif guy_pos.x > (limit_x + cube_size) then
+			guy_pos.x = guy_pos.x - cube_size
+			msg.post("guy", hash("move_bitch"), {pos = guy_pos})
 			msg.post("/cube_1/controller", hash("shift"), {dir = hash("right")})
 		end
 		if guy_pos.y < limit_y then
-			guy_pos.y = guy_pos.y + 320
-			go.set_position(guy_pos, "guy")
-			go.cancel_animations("guy", "position.y")
+			guy_pos.y = guy_pos.y + cube_size
+			msg.post("guy", hash("move_bitch"), {pos = guy_pos})
 			msg.post("/cube_1/controller", hash("shift"), {dir = hash("down")})
-		elseif guy_pos.y > (limit_y + 320) then
-			guy_pos.y = guy_pos.y - 320
-			go.set_position(guy_pos, "guy")
-			go.cancel_animations("guy", "position.y")
+		elseif guy_pos.y > (limit_y + cube_size) then
+			guy_pos.y = guy_pos.y - cube_size
+			msg.post("guy", hash("move_bitch"), {pos = guy_pos})
 			msg.post("/cube_1/controller", hash("shift"), {dir = hash("up")})
 		end
 		
-		local pos_x = (guy_pos.x - limit_x - 160) / 160
-		local pos_y = (guy_pos.y - limit_y - 160) / 160
-
+		local pos_x = (guy_pos.x - limit_x - cube_size * 0.5) / (cube_size * 0.5)
+		local pos_y = (guy_pos.y - limit_y - cube_size * 0.5) / (cube_size * 0.5)
+		
 		local player_pos = vmath.normalize(vmath.vector3(-pos_x, -pos_y, 1))
 
 		local mod
@@ -276,7 +286,7 @@ function update(self, dt)
 		if dist > 1 then
 			go.delete("/trigger_from_cube_1")
 			go.delete("/trigger_teleport_to_cube_1")
-			msg.post("#", hash("camera_mode_cube"), {x = 320, y = 2560})
+			msg.post("#", hash("camera_mode_cube"))
 		else
 			dist = dist * dist * dist
 			go.set("camera", "euler.y", -45 * (1 - dist))

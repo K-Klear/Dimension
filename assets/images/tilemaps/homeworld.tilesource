@@ -58,7 +58,7 @@ convex_hulls {
 convex_hulls {
   index: 26
   count: 4
-  collision_group: ""
+  collision_group: "exit"
 }
 convex_hulls {
   index: 30
@@ -105,6 +105,7 @@ convex_hulls {
   count: 0
   collision_group: ""
 }
+collision_groups: "exit"
 collision_groups: "ground"
 collision_groups: "ladder"
 extrude_borders: 2

@@ -51,13 +51,13 @@ end
 trigger_fn[hash("teleport_to_cube_1")] = function()
 	local pos = go.get_world_position("/guy")
 	go.set("/guy", "position", pos + vmath.vector3(0, 2560, 0))
-	msg.post("@render:", hash("setup_cube"), {left_x = 0, left_y = 40})
+	msg.post("@render:", hash("setup_cube_intro"), {x = 0, y = 40, size = 5})
 	go.set("/trigger_from_cube_1#trigger", "disabled", false)
 end
 trigger_fn[hash("teleport_back_from_cube_1")] = function()
 	local pos = go.get_world_position("/guy")
 	go.set("/guy", "position", pos + vmath.vector3(0, -2560, 0))
-	msg.post("@render:", hash("setup_cube"), {left_x = 0, left_y = 0})
+	msg.post("@render:", hash("setup_cube_special"))
 	go.set("/trigger_teleport_to_cube_1#trigger", "disabled", false)
 end
 

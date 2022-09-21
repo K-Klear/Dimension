@@ -4,6 +4,7 @@ go.property("script", hash(""))
 local scripts = {
 	[hash("")] = function() end,
 	[hash("lab_entry")] = function()
+		sound.play("/sound#reactor_loop")
 		msg.post("/door_lab", hash("switch_mode"), {mode = hash("auto")})
 		msg.post("/lamp_wide/go", hash("enable"))
 		msg.post("/lamp_wide/light_no_sprite", hash("enable"))
@@ -14,15 +15,30 @@ local scripts = {
 			sprite.play_flipbook("/screen_cube#sprite", "rotating_cube")
 		end)
 	end,
-	[hash("check_alignment")] = function()
+	[hash("check_alignment")] = function(self)
 		msg.post("/main", hash("alignment_check"))
-		timer.delay(4, false, function()
+		timer.delay(4, false, function(self)
 			sprite.play_flipbook("/console#sprite", "console_error")
-			go.animate("/bridge_dark", "scale.x", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_INSINE, 1)
-			msg.post("/bridge_dark#co", hash("disable"))
 			sprite.play_flipbook("#sprite", "switch_off")
 			msg.post("light_green", hash("disable"))
 			msg.post("light_red", hash("enable"))
+			self.script = hash("do_nothing")
+			self.turned_on = false
+			sound.play("/sound#error")
+			timer.delay(1.2, false, function()
+				sound.play("/sound#bridge_extend")
+				go.animate("/bridge_dark", "scale.x", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_INSINE, 1)
+				msg.post("/bridge_dark#co", hash("disable"))
+			end)
+		end)
+	end,
+	[hash("do_nothing")] = function(self)
+		timer.delay(0.5, false, function(self)
+			sprite.play_flipbook("#sprite", "switch_off")
+			msg.post("light_green", hash("disable"))
+			msg.post("light_red", hash("enable"))
+			self.turned_on = false
+			sound.play("/sound#error")
 		end)
 	end,
 	[hash("spawn_cube")] = function()
@@ -30,9 +46,9 @@ local scripts = {
 		go.animate("/bridge_dark", "scale.x", go.PLAYBACK_ONCE_FORWARD, 1, go.EASING_OUTSINE, 1)
 		msg.post("/bridge_dark#co", hash("enable"))
 		msg.post("/main", hash("camera_cube_arrival"))
-		go.set("/trigger_follow_cube#trigger", "disabled", false)
 		go.set("/trigger_from_cube_1#trigger", "disabled", false)
 		go.set("/trigger_teleport_to_cube_1#trigger", "disabled", false)
+		sound.play("/sound#bridge_extend")
 	end
 }
 
@@ -49,7 +65,8 @@ local function turn_on(self)
 	sprite.play_flipbook("#sprite", "switch_on")
 	msg.post("light_green", hash("enable"))
 	msg.post("light_red", hash("disable"))
-	scripts[self.script]()
+	scripts[self.script](self)
+	sound.play("/sound#switch")
 end
 
 function on_message(self, message_id, message, sender)

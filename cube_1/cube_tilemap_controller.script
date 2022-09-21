@@ -1,4 +1,6 @@
 go.property("cube_size", 5)
+go.property("offset_x", 0)
+go.property("offset_y", 0)
 
 function init(self)
 	self.faces = {
@@ -12,16 +14,16 @@ function init(self)
 end
 
 local face_coords = {
-	[hash("front")] = function() return 160, 160 + 2560 end,
-	[hash("left")] = function() return -160, 160 + 2560 end,
-	[hash("right")] = function() return 480, 160 + 2560 end,
-	[hash("top")] = function() return 160, 480 + 2560 end,
-	[hash("bottom")] = function() return 160, -160 + 2560 end,
-	[hash("far")] = function() return 800, 160 + 2560 end
+	[hash("front")] = function(self) return 160 + self.offset_x, 160 + self.offset_y end,
+	[hash("left")] = function(self) return -160 + self.offset_x, 160 + self.offset_y end,
+	[hash("right")] = function(self) return 480 + self.offset_x, 160 + self.offset_y end,
+	[hash("top")] = function(self) return 160 + self.offset_x, 480 + self.offset_y end,
+	[hash("bottom")] = function(self) return 160 + self.offset_x, -160 + self.offset_y end,
+	[hash("far")] = function(self) return 800 + self.offset_x, 160 + self.offset_y end
 }
 
 local function move_face(self, face, new_pos)
-	local x, y = face_coords[new_pos]()
+	local x, y = face_coords[new_pos](self)
 	go.set(face, "position.x", x)
 	go.set(face, "position.y", y)
 	self.faces[face] = new_pos

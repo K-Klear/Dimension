@@ -3,16 +3,26 @@ go.property("mode", hash("auto"))
 local AUTO = hash("auto")
 local LOCK = hash("lock")
 
-local open_time = 0.25
+local open_time = 0.5
 
 function init(self)
 	if self.mode == LOCK then
 		msg.post("#co_trigger", hash("disable"))
 	end
+	self.sound_playing = false
+end
+
+local function play_door_sound(self)
+	if not self.sound_playing then
+		sound.play("/sound#door")
+		self.sound_playing = true
+		timer.delay(open_time, false, function() self.sound_playing = false end)
+	end
 end
 
 local function open(self)
 	if not self.open then
+		play_door_sound(self)
 		self.open = true
 		msg.post("#co", hash("disable"))
 		go.animate(".", "scale.y", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_LINEAR, open_time)
@@ -21,6 +31,7 @@ end
 
 local function close(self)
 	if self.open then
+		play_door_sound(self)
 		self.open = false
 		msg.post("#co", hash("enable"))
 		go.animate(".", "scale.y", go.PLAYBACK_ONCE_FORWARD, 1, go.EASING_LINEAR, open_time)

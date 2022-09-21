@@ -28,6 +28,8 @@ local movement_vector = vmath.vector3(0, 0, 0)
 
 local INPUT = {}
 
+local half_screen_w, half_screen_h = 480, 320
+
 local sprite_animations = {
 	[1] = {run = "run_right", stand = "stand_right", jump = "jump_right", turn = "turn_right", climb = "climb_right", ladder = "ladder"},
 	[-1] = {run = "run_left", stand = "stand_left", jump = "jump_left", turn = "turn_left", climb = "climb_left", ladder = "ladder"}
@@ -56,12 +58,12 @@ local function update_lights()
 	local light_dir = vmath.vector4()
 	if lights[1] then
 		go.set("#sprite", "light_col_1", lights[1].colour)
-		light_dir.x = lights[1].pos.x - pos.x + 480
-		light_dir.y = lights[1].pos.y - pos.y + 320
+		light_dir.x = lights[1].pos.x - pos.x + half_screen_w
+		light_dir.y = lights[1].pos.y - pos.y + half_screen_h
 		if lights[2] then
 			go.set("#sprite", "light_col_2", lights[2].colour)
-			light_dir.z = lights[2].pos.x - pos.x + 480
-			light_dir.w = lights[2].pos.y - pos.y + 320
+			light_dir.z = lights[2].pos.x - pos.x + half_screen_w
+			light_dir.w = lights[2].pos.y - pos.y + half_screen_h
 		end
 	else
 		go.set("#sprite", "light_col_1", no_colour)
@@ -81,17 +83,31 @@ function update_default(self)
 	current_position = go.get_world_position(".")
 	local block_left, block_right, block_up, touching_ground
 	local ray
-	ray = physics.raycast(current_position + movement_vector, current_position + movement_vector + collision_vector_x, {hash("ground")})
+	ray = physics.raycast(current_position + movement_vector, current_position + movement_vector + vmath.vector3(28, 6, 0), {hash("ground")})
 	if ray then
 		current_position.x = ray.position.x - collision_vector_x.x
 		block_right = true
 		movement_vector.x = math.min(0, movement_vector.x)
+	else
+		ray = physics.raycast(current_position + movement_vector, current_position + movement_vector + vmath.vector3(28, -6, 0), {hash("ground")})
+		if ray then
+			current_position.x = ray.position.x - collision_vector_x.x
+			block_right = true
+			movement_vector.x = math.min(0, movement_vector.x)
+		end
 	end
-	ray = physics.raycast(current_position + movement_vector, current_position + movement_vector - collision_vector_x, {hash("ground")})
+	ray = physics.raycast(current_position + movement_vector, current_position + movement_vector + vmath.vector3(-28, 6, 0), {hash("ground")})
 	if ray then
 		current_position.x = ray.position.x + collision_vector_x.x
 		block_left = true
 		movement_vector.x = math.max(0, movement_vector.x)
+	else
+		ray = physics.raycast(current_position + movement_vector, current_position + movement_vector + vmath.vector3(-28, -6, 0), {hash("ground")})
+		if ray then
+			current_position.x = ray.position.x + collision_vector_x.x
+			block_left = true
+			movement_vector.x = math.max(0, movement_vector.x)
+		end
 	end
 
 	ray = physics.raycast(current_position + movement_vector, current_position + movement_vector - vmath.vector3(20, 32, 0), {hash("ground")})
@@ -214,6 +230,9 @@ function on_message(self, message_id, message, sender)
 		update_fn = function() end
 	elseif message_id == hash("start") then
 		update_fn = update_default
+	elseif message_id == hash("screen_resized") then
+		half_screen_w = message.w * 0.5
+		half_screen_h = message.h * 0.5
 	end
 end
 

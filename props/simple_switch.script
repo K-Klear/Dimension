@@ -1,0 +1,26 @@
+go.property("script", hash(""))
+go.property("script_2", hash(""))
+
+local scripts = {
+	[hash("")] = function() end,
+}
+
+local function turn_on(self)
+	self.turned_on = true
+	sprite.play_flipbook("#sprite", "switch_on")
+	if scripts[self.script] then
+		scripts[self.script](self)
+	else
+		msg.post(self.script, hash("pressed"))
+		if not (self.script_2 == hash("")) then
+			msg.post(self.script_2, hash("pressed"))
+		end
+	end
+	sound.play("/sound#switch")
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("pressed") and not self.turned_on then
+		turn_on(self)
+	end
+end

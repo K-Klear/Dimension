@@ -17,5 +17,13 @@ function on_message(self, message_id, message, sender)
 		msg.post("right", hash("disable"))
 		msg.post("bottom", hash("disable"))
 		msg.post("top", hash("disable"))
+	elseif message_id == hash("set_brightness") then
+		if message.brightness == 0 then
+			msg.post("bottom#sprite", hash("disable"))
+			msg.post("top#sprite", hash("disable"))
+			msg.post("left#sprite", hash("disable"))
+			msg.post("right#sprite", hash("disable"))
+			msg.post("front#sprite", hash("disable"))
+		end
 	end
 end

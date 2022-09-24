@@ -1,4 +1,24 @@
 name: "default"
+instances {
+  id: "exit"
+  prototype: "/props/exit.go"
+  position {
+    x: 96.0
+    y: 160.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
 scale_along_z: 0
 embedded_instances {
   id: "front"
@@ -495,6 +515,7 @@ embedded_instances {
 }
 embedded_instances {
   id: "top_inside"
+  children: "exit"
   data: "components {\n"
   "  id: \"cube_1_top\"\n"
   "  component: \"/cubes/1/cube_1_top.tilemap\"\n"

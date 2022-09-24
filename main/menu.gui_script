@@ -1,0 +1,113 @@
+local BTN = {}
+
+local hover
+local default_colour = vmath.vector4(1)
+local hover_colour = vmath.vector4(0.5, 0.5, 0.5, 1)
+local disabled_colour = vmath.vector4(0.2, 0.2, 0.2, 1)
+local BTN_ENABLED = {new = true, continue = false, restart = false, quit = true}
+
+local game_running = false
+local menu_enabled = true
+
+local function setup_buttons()
+	BTN_ENABLED.continue = game_running
+	BTN_ENABLED.restart = game_running
+	
+	for key, val in pairs(BTN) do
+		if BTN_ENABLED[key] then
+			gui.set_color(val, default_colour)
+		else
+			gui.set_color(val, disabled_colour)
+		end
+	end
+	hover = nil
+end
+
+function init(self)
+	BTN.new = gui.get_node("new_game")
+	BTN.continue = gui.get_node("continue")
+	BTN.restart = gui.get_node("restart")
+	BTN.quit = gui.get_node("quit")
+	setup_buttons()
+end
+
+local function hide()
+	gui.set_enabled(gui.get_node("loading"), false)
+	gui.set_enabled(gui.get_node("main"), false)
+	menu_enabled = false
+end
+
+local function show()
+	setup_buttons()
+	gui.set_enabled(gui.get_node("main"), true)
+	gui.set_enabled(gui.get_node("loading"), false)
+	menu_enabled = true
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("hide") then
+		hide()
+	elseif message_id == hash("show") then
+		show()
+	elseif message_id == hash("show_loading") then
+		gui.set_enabled(gui.get_node("loading"), true)
+		gui.set_enabled(gui.get_node("main"), false)
+	elseif message_id == hash("show_after_credits") then
+		game_running = false
+		show()
+	end
+end
+
+function on_input(self, action_id, action)
+	if menu_enabled then
+		if not action_id then
+			local hover_found
+			for key, val in pairs(BTN) do
+				if BTN_ENABLED[key] and gui.pick_node(val, action.x, action.y) then
+					if not (hover == val) then
+						if hover then
+							gui.set_color(hover, default_colour)
+						end
+						hover = val
+						gui.set_color(hover, hover_colour)
+						sound.play("#menu_hover")
+					end
+					hover_found = true
+					break
+				end
+			end
+			if not hover_found then
+				if hover then
+					gui.set_color(hover, default_colour)
+				end
+				hover = nil
+			end
+		elseif action_id == hash("click") and hover and action.pressed then
+			sound.play("#menu_select")
+			if hover == BTN.new then
+				gui.set_enabled(gui.get_node("main"), false)
+				gui.set_enabled(gui.get_node("loading"), true)
+				game_running = true
+				timer.delay(0.1, false, function()
+					msg.post("#loader", hash("new_game"))
+				end)
+			elseif hover == BTN.continue then
+				msg.post("#loader", hash("unpause"))
+				hide()
+			elseif hover == BTN.restart then
+				msg.post("#loader", hash("restart"))
+			elseif hover == BTN.quit then
+				menu_enabled = false
+				timer.delay(0.7, false, function()
+					msg.post("@system:", "exit", {code = 0})
+				end)
+			end
+		elseif game_running and action_id == hash("escape") and action.pressed then
+			msg.post("#loader", hash("unpause"))
+			hide()
+		end
+	elseif action_id == hash("escape") and action.pressed then
+		show()
+		msg.post("#loader", hash("pause"))
+	end
+end

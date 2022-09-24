@@ -1,4 +1,219 @@
 name: "default"
+instances {
+  id: "leafy_switch"
+  prototype: "/props/leafy_switch.go"
+  position {
+    x: 353.0
+    y: 352.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  component_properties {
+    id: "leafy_switch"
+    properties {
+      id: "script"
+      value: "/cube_1/leafy_door1/door"
+      type: PROPERTY_TYPE_HASH
+    }
+    properties {
+      id: "script_2"
+      value: "/cube_1/leafy_door/door"
+      type: PROPERTY_TYPE_HASH
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "leafy_switch1"
+  prototype: "/props/leafy_switch.go"
+  position {
+    x: 97.0
+    y: 96.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  component_properties {
+    id: "leafy_switch"
+    properties {
+      id: "script"
+      value: "open_leafy_doors"
+      type: PROPERTY_TYPE_HASH
+    }
+    properties {
+      id: "script_2"
+      value: ""
+      type: PROPERTY_TYPE_HASH
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+instances {
+  id: "exit"
+  prototype: "/props/exit.go"
+  position {
+    x: 96.0
+    y: 352.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "leafy_door"
+  collection: "/props/leafy_door.collection"
+  position {
+    x: 180.0
+    y: 480.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  instance_properties {
+    id: "door"
+    properties {
+      id: "door"
+      properties {
+        id: "face"
+        value: "top"
+        type: PROPERTY_TYPE_HASH
+      }
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "leafy_door1"
+  collection: "/props/leafy_door.collection"
+  position {
+    x: 223.0
+    y: 432.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: -0.70710677
+    w: 0.70710677
+  }
+  instance_properties {
+    id: "door"
+    properties {
+      id: "door"
+      properties {
+        id: "face"
+        value: "top"
+        type: PROPERTY_TYPE_HASH
+      }
+      properties {
+        id: "open"
+        value: "true"
+        type: PROPERTY_TYPE_BOOLEAN
+      }
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "leafy_door2"
+  collection: "/props/leafy_door.collection"
+  position {
+    x: 36.0
+    y: 352.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  instance_properties {
+    id: "door"
+    properties {
+      id: "door"
+      properties {
+        id: "face"
+        value: "front"
+        type: PROPERTY_TYPE_HASH
+      }
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+collection_instances {
+  id: "leafy_door3"
+  collection: "/props/leafy_door.collection"
+  position {
+    x: 36.0
+    y: 34.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  instance_properties {
+    id: "door"
+    properties {
+      id: "door"
+      properties {
+        id: "face"
+        value: "front"
+        type: PROPERTY_TYPE_HASH
+      }
+    }
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
 scale_along_z: 0
 embedded_instances {
   id: "front"
@@ -26,7 +241,7 @@ embedded_instances {
   children: "left_inside"
   data: ""
   position {
-    x: -160.0
+    x: -224.0
     y: 160.0
     z: 0.0
   }
@@ -47,7 +262,7 @@ embedded_instances {
   children: "right_inside"
   data: ""
   position {
-    x: 480.0
+    x: 544.0
     y: 160.0
     z: 0.0
   }
@@ -69,7 +284,7 @@ embedded_instances {
   data: ""
   position {
     x: 160.0
-    y: 480.0
+    y: 544.0
     z: 0.0
   }
   rotation {
@@ -90,28 +305,7 @@ embedded_instances {
   data: ""
   position {
     x: 160.0
-    y: -160.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
-embedded_instances {
-  id: "far"
-  children: "far_inside"
-  data: ""
-  position {
-    x: 800.0
-    y: 160.0
+    y: -224.0
     z: 0.0
   }
   rotation {
@@ -142,6 +336,11 @@ embedded_instances {
   "    z: 0.0\n"
   "    w: 1.0\n"
   "  }\n"
+  "  properties {\n"
+  "    id: \"cube_size\"\n"
+  "    value: \"6.0\"\n"
+  "    type: PROPERTY_TYPE_NUMBER\n"
+  "  }\n"
   "  property_decls {\n"
   "  }\n"
   "}\n"
@@ -165,6 +364,8 @@ embedded_instances {
 }
 embedded_instances {
   id: "front_inside"
+  children: "exit"
+  children: "leafy_switch"
   data: "components {\n"
   "  id: \"cube_1_front\"\n"
   "  component: \"/cubes/2/cube_2_front.tilemap\"\n"
@@ -186,70 +387,6 @@ embedded_instances {
   "  id: \"collisionobject\"\n"
   "  type: \"collisionobject\"\n"
   "  data: \"collision_shape: \\\"/cubes/2/cube_2_front.tilemap\\\"\\n"
-  "type: COLLISION_OBJECT_TYPE_KINEMATIC\\n"
-  "mass: 0.0\\n"
-  "friction: 0.1\\n"
-  "restitution: 0.5\\n"
-  "group: \\\"ladder, ground\\\"\\n"
-  "mask: \\\"player\\\"\\n"
-  "linear_damping: 0.0\\n"
-  "angular_damping: 0.0\\n"
-  "locked_rotation: false\\n"
-  "bullet: false\\n"
-  "\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "}\n"
-  ""
-  position {
-    x: -160.0
-    y: -160.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  scale3 {
-    x: 1.0
-    y: 1.0
-    z: 1.0
-  }
-}
-embedded_instances {
-  id: "far_inside"
-  data: "components {\n"
-  "  id: \"cube_1_far\"\n"
-  "  component: \"/cubes/2/cube_2_far.tilemap\"\n"
-  "  position {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "  }\n"
-  "  rotation {\n"
-  "    x: 0.0\n"
-  "    y: 0.0\n"
-  "    z: 0.0\n"
-  "    w: 1.0\n"
-  "  }\n"
-  "  property_decls {\n"
-  "  }\n"
-  "}\n"
-  "embedded_components {\n"
-  "  id: \"collisionobject\"\n"
-  "  type: \"collisionobject\"\n"
-  "  data: \"collision_shape: \\\"/cubes/2/cube_2_far.tilemap\\\"\\n"
   "type: COLLISION_OBJECT_TYPE_KINEMATIC\\n"
   "mass: 0.0\\n"
   "friction: 0.1\\n"
@@ -485,6 +622,7 @@ embedded_instances {
 }
 embedded_instances {
   id: "top_inside"
+  children: "leafy_switch1"
   data: "components {\n"
   "  id: \"cube_1_top\"\n"
   "  component: \"/cubes/2/cube_2_top.tilemap\"\n"
@@ -506,6 +644,91 @@ embedded_instances {
   "  id: \"collisionobject\"\n"
   "  type: \"collisionobject\"\n"
   "  data: \"collision_shape: \\\"/cubes/2/cube_2_top.tilemap\\\"\\n"
+  "type: COLLISION_OBJECT_TYPE_KINEMATIC\\n"
+  "mass: 0.0\\n"
+  "friction: 0.1\\n"
+  "restitution: 0.5\\n"
+  "group: \\\"ladder, ground\\\"\\n"
+  "mask: \\\"player\\\"\\n"
+  "linear_damping: 0.0\\n"
+  "angular_damping: 0.0\\n"
+  "locked_rotation: false\\n"
+  "bullet: false\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: -160.0
+    y: -160.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "far"
+  children: "far_inside"
+  data: ""
+  position {
+    x: 928.0
+    y: 160.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "far_inside"
+  data: "components {\n"
+  "  id: \"cube_1_far\"\n"
+  "  component: \"/cubes/2/cube_2_far.tilemap\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "  property_decls {\n"
+  "  }\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"collisionobject\"\n"
+  "  type: \"collisionobject\"\n"
+  "  data: \"collision_shape: \\\"/cubes/2/cube_2_far.tilemap\\\"\\n"
   "type: COLLISION_OBJECT_TYPE_KINEMATIC\\n"
   "mass: 0.0\\n"
   "friction: 0.1\\n"

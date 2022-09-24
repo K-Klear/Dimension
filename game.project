@@ -9,7 +9,7 @@ package = com.defold.example.basic3d
 [project]
 dependencies = 
 title = D-Fold
-version = 0.1
+version = 1.0
 developer = Klear
 
 [osx]
@@ -31,5 +31,9 @@ update_frequency = 60
 allow_dynamic_transforms = 0
 
 [tilemap]
-max_tile_count = 3072
+max_tile_count = 4096
+
+[html5]
+cssfile = /builtins/manifests/web/dark_theme.css
+show_console_banner = 0
 

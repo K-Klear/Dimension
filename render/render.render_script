@@ -1,6 +1,7 @@
 local proj_left, proj_front, proj_right, proj_top, proj_bottom
 local ambient_light = vmath.vector4(0.1)
 local draw_flatland = true
+local draw_defold_corners = false
 
 local NORMAL_RT, LIGHT_RT
 local CUBE_FRONT_RT, CUBE_LEFT_RT, CUBE_RIGHT_RT, CUBE_TOP_RT, CUBE_BOTTOM_RT
@@ -77,6 +78,7 @@ function init(self)
     self.particle_pred = render.predicate({"particle"})
     self.model_pred = render.predicate({"model"})
     self.tilemap_pred = render.predicate({"tilemap"})
+    self.defold_corner_pred = render.predicate({"defold_corner"})
     self.light_pred = render.predicate({"light"})
     self.quad_pred = render.predicate({"quad"})
 
@@ -155,6 +157,9 @@ function update(self)
         render.draw(self.tilemap_pred)
         render.draw(self.tile_pred)
         render.draw_debug3d()
+    end
+    if draw_defold_corners then
+        render.draw(self.defold_corner_pred)
     end
 
     render.enable_texture(0, CUBE_FRONT_RT, render.BUFFER_COLOR_BIT)
@@ -236,5 +241,7 @@ function on_message(self, message_id, message)
         ambient_light = message.light
     elseif message_id == hash("toggle_flatland") then
         draw_flatland = message.enabled
+    elseif message_id == hash("toggle_defold_corners") then
+        draw_defold_corners = message.enabled
     end
 end

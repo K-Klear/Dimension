@@ -1,20 +1,120 @@
-local current_proxy = "#intro_proxy"
+local current_proxy = nil
+
+local STATE = require "main.game_state"
 
 math.randomseed(os.time())
 
+local level_list = {
+	"#intro_proxy",
+	"#level_2_proxy",
+	"#level_3_proxy",
+	"#level_x_proxy",
+	"#level_4_proxy",
+	"#level_credits_proxy",
+}
+
+local current_level = 1
+local loading = false
+
+local music
+
+local resize_timer
+
+local function window_callback(self, event, data)
+	if event == window.WINDOW_EVENT_RESIZED then
+		if not resize_timer then
+			resize_timer = timer.delay(0, false, function()
+				local w, h = window.get_size()
+				w = math.max(w, 1)
+				h = math.max(h, 1)
+				msg.post("@render:", hash("resized"), {w = w, h = h})
+				resize_timer = nil
+				STATE.screen_resized = true
+			end)
+		end
+	end
+end
+
 function init(self)
 	msg.post(".", "acquire_input_focus")
-	current_proxy = "#level_2_proxy"
-	msg.post(current_proxy, hash("load"))
+	msg.post("@render:", hash("setup_cube_intro"), {x = 0, y = 40, size = 5})
+	window.set_listener(window_callback)
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("proxy_loaded") then
 		msg.post(sender, hash("init"))
 		msg.post(sender, hash("enable"))
+		msg.post("#menu", hash("hide"))
+		STATE.paused = false
+		loading = false
+		msg.post(current_proxy, hash("set_time_step"), {factor = 1, mode = 0})
+	elseif message_id == hash("next_level") and not loading then
+		msg.post("#menu", hash("show_loading"))
+		current_level = current_level + 1
+		if level_list[current_level] then
+			loading = true
+			timer.delay(0.5, false, function()
+				msg.post(current_proxy, hash("unload"))
+				current_proxy = level_list[current_level]
+			end)
+		else
+			if music then
+				sound.stop(music)
+				music = nil
+			end
+			current_level = 1
+			local old_proxy = current_proxy
+			current_proxy = nil
+			msg.post(old_proxy, hash("unload"))
+		end
 	elseif message_id == hash("restart") then
 		msg.post(current_proxy, hash("unload"))
 	elseif message_id == hash("proxy_unloaded") then
-		msg.post(current_proxy, hash("load"))
+		if current_proxy then
+			msg.post(current_proxy, hash("load"))
+		else
+			msg.post("#menu", hash("show_after_credits"))
+		end
+	elseif message_id == hash("play_music") then
+		if music and not (music == message.music) then
+			sound.stop(music)
+		end
+		if not (music == message.music) then
+			music = message.music
+			sound.play(music)
+		end
+	elseif message_id == hash("fade_out_music") and music then
+		local step = (1 / message.duration) * 0.05
+		local gain = 1 - step
+		timer.delay(0.05, true, function(self, handle, time_elapsed)
+			sound.set_gain(music, gain)
+			gain = gain - step
+			if gain < 0 then
+				sound.stop(music)
+				timer.cancel(handle)
+			end
+		end)
+	elseif message_id == hash("pause") then
+		msg.post(current_proxy, hash("set_time_step"), {factor = 0, mode = 0})
+		STATE.paused = true
+	elseif message_id == hash("unpause") then
+		msg.post(current_proxy, hash("set_time_step"), {factor = 1, mode = 0})
+		STATE.paused = false
+	elseif message_id == hash("new_game") then
+		if current_proxy then
+			if music then
+				sound.stop(music)
+				music = nil
+			end
+			local old_proxy = current_proxy
+			current_level = 1
+			current_proxy = "#intro_proxy"
+			msg.post(old_proxy, hash("unload"))
+		else
+			current_level = 1
+			current_proxy = "#intro_proxy"
+			msg.post(current_proxy, hash("load"))
+		end
 	end
 end

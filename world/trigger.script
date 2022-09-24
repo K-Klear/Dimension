@@ -60,10 +60,20 @@ trigger_fn[hash("teleport_back_from_cube_1")] = function()
 	msg.post("@render:", hash("setup_cube_special"))
 	go.set("/trigger_teleport_to_cube_1#trigger", "disabled", false)
 end
+trigger_fn[hash("massive_door")] = function()
+	msg.post("/cube_1/leafy_door_massive/door", hash("pressed"))
+	msg.post("/cube_1/leafy_door_massive_2/door", hash("pressed"))
+	msg.post("/cube_1/leafy_door_massive_3/door", hash("pressed"))
+	
+end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("trigger_response") and message.enter and not self.disabled then
 		self.disabled = true
-		trigger_fn[self.script]()
+		if trigger_fn[self.script] then
+			trigger_fn[self.script]()
+		elseif not (self.script == hash("")) then
+			msg.post(self.script, hash("pressed"))
+		end
 	end
 end

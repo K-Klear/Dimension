@@ -1,0 +1,21 @@
+go.property("extended", true)
+
+function init(self)
+	if not self.extended then
+		go.set(".", "scale.x", 0)
+		msg.post("#co", hash("disable"))
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("pressed") then
+		if self.extended then
+			go.animate(".", "scale.x", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTSINE, 0.5)
+			msg.post("#co", hash("disable"))
+		else
+			go.animate(".", "scale.x", go.PLAYBACK_ONCE_FORWARD, 1, go.EASING_OUTSINE, 0.5)
+			msg.post("#co", hash("enable"))
+		end
+		self.extended = not self.extended
+	end
+end

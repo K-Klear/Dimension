@@ -1,0 +1,29 @@
+
+local open_time = 0.25
+
+
+
+local function open(self)
+	if not self.open then
+		sound.play("/sound#door")
+		self.open = true
+		msg.post("#co", hash("disable"))
+		go.animate(".", "scale.y", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_LINEAR, open_time)
+	end
+end
+
+local function close(self)
+	if self.open then
+		sound.play("/sound#door")
+		self.open = false
+		msg.post("#co", hash("enable"))
+		go.animate(".", "scale.y", go.PLAYBACK_ONCE_FORWARD, 1, go.EASING_LINEAR, open_time)
+	end
+end
+
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("pressed") then
+		open(self)
+	end
+end

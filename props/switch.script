@@ -1,10 +1,13 @@
 go.property("turned_on", false)
 go.property("script", hash(""))
+go.property("script_2", hash(""))
+go.property("face", hash(""))
 
 local scripts = {
 	[hash("")] = function() end,
 	[hash("lab_entry")] = function()
 		sound.play("/sound#reactor_loop")
+		msg.post(msg.url("bootstrap", "/loader", "loader"), hash("play_music"), {music = "#intro_music"})
 		msg.post("/door_lab", hash("switch_mode"), {mode = hash("auto")})
 		msg.post("/lamp_wide/go", hash("enable"))
 		msg.post("/lamp_wide/light_no_sprite", hash("enable"))
@@ -58,6 +61,20 @@ function init(self)
 	else
 		msg.post("light_green", hash("disable"))
 	end
+	local parents = {
+		[hash("front")] = "/cube_1/front_inside",
+		[hash("right")] = "/cube_1/right_inside",
+		[hash("far")] = "/cube_1/far_inside",
+		[hash("left")] = "/cube_1/left_inside",
+		[hash("top")] = "/cube_1/top_inside",
+		[hash("bottom")] = "/cube_1/bottom_inside"
+	}
+	local object_list = {".", "light_red", "light_green"}
+	if not (self.face == hash("")) then
+		for key, val in ipairs(object_list) do
+			go.set_parent(val, parents[self.face], true)
+		end
+	end
 end
 
 local function turn_on(self)
@@ -65,7 +82,14 @@ local function turn_on(self)
 	sprite.play_flipbook("#sprite", "switch_on")
 	msg.post("light_green", hash("enable"))
 	msg.post("light_red", hash("disable"))
-	scripts[self.script](self)
+	if scripts[self.script] then
+		scripts[self.script](self)
+	else
+		msg.post(self.script, hash("pressed"))
+		if not (self.script_2 == hash("")) then
+			msg.post(self.script_2, hash("pressed"))
+		end
+	end
 	sound.play("/sound#switch")
 end
 

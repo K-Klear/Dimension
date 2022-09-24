@@ -37,75 +37,124 @@ convex_hulls {
 }
 convex_hulls {
   index: 26
-  count: 0
-  collision_group: ""
-}
-convex_hulls {
-  index: 26
-  count: 0
-  collision_group: ""
-}
-convex_hulls {
-  index: 26
-  count: 0
-  collision_group: ""
-}
-convex_hulls {
-  index: 26
-  count: 0
-  collision_group: ""
-}
-convex_hulls {
-  index: 26
   count: 4
-  collision_group: "exit"
+  collision_group: "ground"
 }
 convex_hulls {
   index: 30
+  count: 6
+  collision_group: ""
+}
+convex_hulls {
+  index: 36
   count: 4
   collision_group: ""
 }
 convex_hulls {
-  index: 34
+  index: 40
+  count: 9
+  collision_group: ""
+}
+convex_hulls {
+  index: 49
   count: 4
   collision_group: ""
 }
 convex_hulls {
-  index: 38
+  index: 53
   count: 4
   collision_group: ""
 }
 convex_hulls {
-  index: 42
+  index: 57
   count: 4
   collision_group: ""
 }
 convex_hulls {
-  index: 46
+  index: 61
   count: 4
   collision_group: ""
 }
 convex_hulls {
-  index: 50
-  count: 0
+  index: 65
+  count: 4
   collision_group: ""
 }
 convex_hulls {
-  index: 50
-  count: 0
+  index: 69
+  count: 4
   collision_group: ""
 }
 convex_hulls {
-  index: 50
-  count: 0
+  index: 73
+  count: 4
+  collision_group: "ground"
+}
+convex_hulls {
+  index: 77
+  count: 4
   collision_group: ""
 }
 convex_hulls {
-  index: 50
-  count: 0
+  index: 81
+  count: 4
+  collision_group: "ground"
+}
+convex_hulls {
+  index: 85
+  count: 4
+  collision_group: "ground"
+}
+convex_hulls {
+  index: 89
+  count: 4
   collision_group: ""
 }
-collision_groups: "exit"
+convex_hulls {
+  index: 93
+  count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 97
+  count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 101
+  count: 4
+  collision_group: "ground"
+}
+convex_hulls {
+  index: 105
+  count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 109
+  count: 4
+  collision_group: "ground"
+}
+convex_hulls {
+  index: 113
+  count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 117
+  count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 121
+  count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 125
+  count: 6
+  collision_group: "ladder"
+}
 collision_groups: "ground"
 collision_groups: "ladder"
 extrude_borders: 2

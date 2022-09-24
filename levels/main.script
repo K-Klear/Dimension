@@ -44,28 +44,13 @@ local object_list_spriteless = {
 	"/screen_cube"
 }
 
-local resize_timer
-
-local function window_callback(self, event, data)
-	if event == window.WINDOW_EVENT_RESIZED then
-		if not resize_timer then
-			resize_timer = timer.delay(0, false, function()
-				local w, h = window.get_size()
-				w = math.max(w, 1)
-				h = math.max(h, 1)
-				msg.post("@render:", hash("resized"), {w = w, h = h})
-				msg.post("/guy", hash("screen_resized"), {w = w, h = h})
-				resize_timer = nil
-			end)
-		end
-	end
-end
-
 local limit_x, limit_y, cube_size = 0, 0, 5 * 64
+local track_sides = false
+local side
 
 function init(self)
-	window.set_listener(window_callback)
 	if self.level == hash("intro") then
+		msg.post(msg.url("bootstrap", "/loader", "loader"), hash("play_music"), {music = "#intro_music_1"})
 		msg.post("/cube/controller", hash("hide"))
 		camera_mode = FOLLOW
 		msg.post("lamp_wide/go", hash("disable"))
@@ -81,20 +66,41 @@ function init(self)
 		msg.post("bridge#co", hash("disable"))
 		go.set("bridge", "scale.x", 0)
 		msg.post("@render:", hash("setup_cube_intro"), {x = 0, y = 40, size = 5})
+		msg.post("@render:", hash("toggle_flatland"), {enabled = true})
+		msg.post("@render:", hash("set_ambient_light"), {light = vmath.vector4(0.1)})
 		go.set("camera", "position.x", go.get_world_position("guy").x)
 		go.set("camera", "position.y", go.get_world_position("guy").y)
+		msg.post("light_cube", hash("disable"))
 		limit_x, limit_y = 320, 2560
 	else
 		msg.post("@render:", hash("set_ambient_light"), {light = vmath.vector4(0.5)})
 		cube_size = go.get("/cube_1/controller#cube_tilemap_controller", "cube_size")
 		local x_offset = go.get("/cube_1/controller", "position")
-		
 		limit_x, limit_y = 0, 0
+		if self.level == hash("level_credits") then
+			msg.post("/cube/controller", hash("set_brightness"), {brightness = 1})
+			msg.post(msg.url("bootstrap", "/loader", "loader"), hash("play_music"), {music = "#credits_music"})
+			msg.post("/cube_1/exit", hash("disable"))
+			track_sides = true
+			side = 1
+		else
+			msg.post("@render:", hash("toggle_defold_corners"), {enabled = false})
+			msg.post("/cube/controller", hash("set_brightness"), {brightness = 0})
+		end
 		msg.post("@render:", hash("toggle_flatland"), {enabled = false})
-		--msg.post("/cube/controller", hash("hide"))
 		msg.post("@render:", hash("setup_cube"), {x = 160, y = 0, size = cube_size})
+
+		local cam_z_mod = ((cube_size - 5) / 16) * -372.55
+		go.set("camera", "position.z", 772.55 + cam_z_mod)
 		cube_size = cube_size * 64
 		camera_mode = CUBE
+		if self.level == hash("level_4") then
+			msg.post(msg.url("bootstrap", "/loader", "loader"), hash("play_music"), {music = "#level_4_music"})
+		elseif self.level == hash("level_2") then
+			msg.post(msg.url("bootstrap", "/loader", "loader"), hash("play_music"), {music = "#leafy_music"})
+		elseif self.level == hash("level_3") or self.level == hash("level_x") then
+			msg.post(msg.url("bootstrap", "/loader", "loader"), hash("play_music"), {music = "#level_3_music"})
+		end
 	end
 	msg.post("@render:", "use_camera_projection")
 	msg.post("/shaker#camera", "acquire_camera_focus")
@@ -173,9 +179,11 @@ function on_message(self, message_id, message, sender)
 			sound.play("/sound#earthquake")
 		end)
 		timer.delay(4.15, false, function()
+			msg.post(msg.url("bootstrap", "/loader", "loader"), hash("play_music"), {music = "#intro_cube_music"})
 			explode_tiles()
 			shake_camera(1.5, 8, 0.3, "position.x")
 			sound.play("/sound#cube_impact")
+			msg.post("light_cube", hash("enable"))
 		end)
 		timer.delay(4.5, false, function()
 			msg.post("/cube/controller", hash("spawn"))
@@ -199,6 +207,7 @@ function on_message(self, message_id, message, sender)
 			msg.post("/door_lab_2", hash("switch_mode"), {mode = hash("lock"), state = hash("open")})
 		end)
 	elseif message_id == hash("camera_mode_cube") then
+		msg.post(msg.url("bootstrap", "/loader", "loader"), hash("fade_out_music"), {duration = 7.5})
 		shake_camera(0.5, 4, 0.4, "position.y")
 		camera_mode = CUBE
 		go.animate("camera", "position.x", go.PLAYBACK_ONCE_FORWARD, 160, go.EASING_INSINE, 3)
@@ -228,6 +237,141 @@ function on_message(self, message_id, message, sender)
 	end
 end
 
+local function corners_3()
+	msg.post("@render:", hash("toggle_defold_corners"), {enabled = true})
+	sprite.play_flipbook("/cube/defold_corner#sprite", "defold_corner_4")
+	sprite.play_flipbook("/cube/defold_corner#sprite1", "defold_corner_4")
+
+	sprite.play_flipbook("/cube/defold_corner3#sprite", "defold_corner_3")
+	sprite.play_flipbook("/cube/defold_corner3#sprite1", "defold_corner_2")
+end
+
+local function corners_4()
+	sprite.play_flipbook("/cube/defold_corner#sprite", "defold_corner")
+	sprite.play_flipbook("/cube/defold_corner#sprite1", "defold_corner_4")
+	
+	sprite.play_flipbook("/cube/defold_corner1#sprite", "defold_corner_4")
+	sprite.play_flipbook("/cube/defold_corner1#sprite1", "defold_corner")
+
+	sprite.play_flipbook("/cube/defold_corner2#sprite", "defold_corner_3")
+	sprite.play_flipbook("/cube/defold_corner2#sprite1", "defold_corner_2")
+
+	sprite.play_flipbook("/cube/defold_corner3#sprite", "defold_corner_2")
+	sprite.play_flipbook("/cube/defold_corner3#sprite1", "defold_corner_3")
+end
+
+local function corners_5()
+	msg.post("@render:", hash("toggle_defold_corners"), {enabled = true})
+	sprite.play_flipbook("/cube/defold_corner1#sprite", "defold_corner")
+	sprite.play_flipbook("/cube/defold_corner1#sprite1", "defold_corner_4")
+
+	sprite.play_flipbook("/cube/defold_corner2#sprite", "defold_corner_2")
+	sprite.play_flipbook("/cube/defold_corner2#sprite1", "defold_corner_3")
+end
+
+local function switch_sides()
+	print(side)
+	if side == 1 then
+		msg.post("cube_1/go#co", hash("enable"))
+	elseif side == 2 then
+		msg.post("cube_1/go#co", hash("disable"))
+	elseif side == 3 then
+		corners_3()
+		for x = 1, 9 do
+			for y = 1, 9 do
+				local tile = 1
+				if y == 4 then
+					tile = 2
+				elseif y == 5 then
+					tile = 12
+				elseif y == 6 then
+					tile = 13
+				elseif y == 7 then
+					tile = 14
+				elseif y == 8 then
+					tile = 15
+				elseif y == 9 then
+					tile = 16
+				end
+				local tilemap_url = "cube_1/front_inside#cube_1_front"
+				tilemap.set_tile(tilemap_url, "ground", x, y, tile)
+			end
+		end
+		label.set_text("cube_1/go#label", "D-Fold\nby Klear")
+	elseif side == 4 then
+		corners_4()
+		for x = 1, 9 do
+			for y = 1, 9 do
+				local tile = 16
+				if y == 6 then
+					tile = 19
+				elseif y == 4 then
+					tile = 20
+				end
+				local tilemap_url = "cube_1/front_inside#cube_1_front"
+				tilemap.set_tile(tilemap_url, "ground", x, y, tile)
+				tile = 3
+				if y == 5 then
+					tile = 4
+				end
+				local tilemap_url = "cube_1/right_inside#cube_1_right"
+				tilemap.set_tile(tilemap_url, "ground", x, y, tile)
+				tile = 7
+				if y == 5 then
+					tile = 9
+				end
+				local tilemap_url = "cube_1/far_inside#cube_1_far"
+				tilemap.set_tile(tilemap_url, "ground", x, y, tile)
+				tilemap.set_visible(tilemap_url, "ladders", true)
+				tilemap.set_visible(tilemap_url, "exit", true)
+			end
+		end
+		label.set_text("cube_1/go2#label", "With sounds from:\n\n\n\nzapsplat.com\nmixkit.co\nfreesound.com")
+		label.set_text("cube_1/go#label", "Thank you\nfor playing!")
+		local text_1 = "\"Future Gladiator\"\n\"Hiding Your Reality\"\n\"SCP-x2x (Unseen Presence)\""
+		local text_2 = "\n\"Tenebrous Brothers Carnival - Mermaid\"\n\"Voxel Revolution\"\n\"Wind of the Rainforest\""
+		local text_3 = "\n\nLicensed under Creative Commons: By Attribution 3.0\nhttp://creativecommons.org/licenses/by/3.0/"
+		
+		label.set_text("cube_1/go1#label", text_1..text_2..text_3)
+		label.set_text("cube_1/go1#label1", "Music:\nKevin MacLeod\n(incompetech.com)")
+	elseif side == 5 then
+		corners_5()
+		for x = 1, 9 do
+			for y = 1, 9 do
+				local tile = 16
+				if y == 6 then
+					tile = 19
+				elseif y == 4 then
+					tile = 20
+				end
+				local tilemap_url = "cube_1/right_inside#cube_1_right"
+				tilemap.set_tile(tilemap_url, "ground", x, y, tile)
+			end
+		end
+		label.set_text("cube_1/go1#label", "")
+		label.set_text("cube_1/go1#label1", "")
+		msg.post("/cube_1/exit", hash("disable"))
+	elseif side == 6 then
+		msg.post("@render:", hash("toggle_defold_corners"), {enabled = false})
+		for x = 1, 9 do
+			for y = 1, 9 do
+				local tile = 16
+				if y == 6 then
+					tile = 19
+				elseif (y == 4) and (x < 5) then
+					tile = 20
+				end
+				local tilemap_url = "cube_1/far_inside#cube_1_far"
+				tilemap.set_tile(tilemap_url, "ground", x, y, tile)
+				tilemap.set_visible(tilemap_url, "ladders", false)
+				tilemap.set_visible(tilemap_url, "exit", false)
+			end
+		end
+		msg.post("/cube_1/exit", hash("enable"))
+		label.set_text("cube_1/go2#label", "")
+	end
+end
+
 function update(self, dt)
 	if camera_mode == FOLLOW then
 		local cam_pos = go.get_world_position("camera")
@@ -244,10 +388,18 @@ function update(self, dt)
 			guy_pos.x = guy_pos.x + cube_size
 			msg.post("guy", hash("move_bitch"), {pos = guy_pos})
 			msg.post("/cube_1/controller", hash("shift"), {dir = hash("left")})
+			if track_sides then
+				side = side - 1
+				switch_sides()
+			end
 		elseif guy_pos.x > (limit_x + cube_size) then
 			guy_pos.x = guy_pos.x - cube_size
 			msg.post("guy", hash("move_bitch"), {pos = guy_pos})
 			msg.post("/cube_1/controller", hash("shift"), {dir = hash("right")})
+			if track_sides then
+				side = side + 1
+				switch_sides()
+			end
 		end
 		if guy_pos.y < limit_y then
 			guy_pos.y = guy_pos.y + cube_size

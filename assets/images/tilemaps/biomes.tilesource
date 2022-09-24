@@ -1,0 +1,113 @@
+image: "/assets/images/tilemaps/biomes.png"
+tile_width: 64
+tile_height: 64
+tile_margin: 1
+tile_spacing: 1
+collision: "/assets/images/tilemaps/biomes.png"
+material_tag: "tile"
+convex_hulls {
+  index: 0
+  count: 4
+  collision_group: "ground"
+}
+convex_hulls {
+  index: 4
+  count: 6
+  collision_group: ""
+}
+convex_hulls {
+  index: 10
+  count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 14
+  count: 9
+  collision_group: ""
+}
+convex_hulls {
+  index: 23
+  count: 9
+  collision_group: ""
+}
+convex_hulls {
+  index: 32
+  count: 7
+  collision_group: ""
+}
+convex_hulls {
+  index: 39
+  count: 4
+  collision_group: "ground"
+}
+convex_hulls {
+  index: 43
+  count: 4
+  collision_group: ""
+}
+convex_hulls {
+  index: 47
+  count: 12
+  collision_group: "ladder"
+}
+convex_hulls {
+  index: 59
+  count: 12
+  collision_group: "ladder"
+}
+convex_hulls {
+  index: 71
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 71
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 71
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 71
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 71
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 71
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 71
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 71
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 71
+  count: 0
+  collision_group: ""
+}
+convex_hulls {
+  index: 71
+  count: 0
+  collision_group: ""
+}
+collision_groups: "exit"
+collision_groups: "ground"
+collision_groups: "ladder"
+extrude_borders: 2
+inner_padding: 0
+sprite_trim_mode: SPRITE_TRIM_MODE_OFF

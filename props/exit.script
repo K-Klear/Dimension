@@ -1,0 +1,9 @@
+function init(self)
+	go.animate(".", "euler.z", go.PLAYBACK_LOOP_FORWARD, 360, go.EASING_LINEAR, 5)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("play_sound") then
+		sound.play("#exit_sound")
+	end
+end
